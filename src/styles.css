@@ -1,2 +1,42 @@
 @import "tailwindcss";
 @plugin "tailwindcss-primeui";
+
+:root {
+  --primary-color: theme('colors.blue.500');
+  --text-color: theme('colors.white');
+  --surface-ground: theme('colors.gray.900');
+  --surface-section: theme('colors.gray.900');
+  --surface-card: theme('colors.gray.800');
+  --surface-overlay: theme('colors.gray.800');
+  --surface-border: theme('colors.gray.700');
+  --surface-hover: theme('colors.gray.700');
+  --focus-ring: theme('colors.blue.500');
+}
+
+body {
+  @apply bg-gray-900 text-white;
+}
+
+.p-component {
+  @apply bg-gray-800 text-white border-gray-700;
+}
+
+.p-button {
+  @apply bg-blue-500 border-blue-500 text-white transition-all duration-200;
+}
+
+.p-button:hover {
+  @apply bg-blue-600 border-blue-600 -translate-y-0.5;
+}
+
+.p-button-outlined {
+  @apply bg-transparent text-blue-500 border-blue-500 transition-all duration-200;
+}
+
+.p-button-outlined:hover {
+  @apply bg-blue-500 text-white -translate-y-0.5;
+}
+
+.p-button-lg {
+  @apply px-6 py-3 text-lg rounded-lg;
+}
