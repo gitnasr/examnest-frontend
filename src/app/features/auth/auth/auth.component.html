@@ -1,131 +1,163 @@
-<div class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-900 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md space-y-8">
-        <!-- Logo and Title -->
-        <div class="text-center">
-            <div class="flex justify-center">
-                <img src="/assets/images/logos/logo.png" alt="Exam Nest Logo" class="w-auto h-12">
-            </div>
-            <h2 class="mt-6 text-3xl font-bold text-white">Welcome to Exam Nest</h2>
-            <p class="mt-2 text-sm text-gray-400">Your gateway to seamless online examinations</p>
-        </div>
-
-        <!-- Tabs -->
-        <div class="flex border-b border-gray-700">
-            <button 
-                (click)="activeTab = 'login'"
-                [class]="activeTab === 'login' ? 'flex-1 py-4 text-center text-blue-400 border-b-2 border-blue-500' : 'flex-1 py-4 text-center text-gray-400 border-b-2 border-transparent hover:text-blue-400'"
-                class="transition-colors">
-                Login
-            </button>
-            <button 
-                (click)="activeTab = 'register'"
-                [class]="activeTab === 'register' ? 'flex-1 py-4 text-center text-blue-400 border-b-2 border-blue-500' : 'flex-1 py-4 text-center text-gray-400 border-b-2 border-transparent hover:text-blue-400'"
-                class="transition-colors">
-                Register
-            </button>
-        </div>
-
-        <!-- Login Form -->
-        @if (activeTab === 'login') {
-            <div class="mt-8 space-y-6">
-                <form class="space-y-6" (ngSubmit)="onLogin()">
-                    <app-form-input
-                        id="email"
-                        name="email"
-                        type="email"
-                        label="Email address"
-                        placeholder="Enter your email"
-                        [(value)]="loginForm.email"
-                        [required]="true">
-                    </app-form-input>
-
-                    <app-form-input
-                        id="password"
-                        name="password"
-                        type="password"
-                        label="Password"
-                        placeholder="Enter your password"
-                        [(value)]="loginForm.password"
-                        [required]="true">
-                    </app-form-input>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <input 
-                                id="remember-me" 
-                                name="remember-me" 
-                                type="checkbox" 
-                                class="w-4 h-4 text-blue-500 bg-gray-800 border-gray-700 rounded focus:ring-blue-500">
-                            <label for="remember-me" class="block ml-2 text-sm text-gray-400">Remember me</label>
-                        </div>
-
-                        <div class="text-sm">
-                            <a href="#" class="font-medium text-blue-400 hover:text-blue-300">Forgot your password?</a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <button 
-                            type="submit"
-                            class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 border border-transparent rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Sign in
-                        </button>
-                    </div>
-                </form>
-            </div>
-        }
-
-        <!-- Register Form -->
-        @if (activeTab === 'register') {
-            <div class="mt-8 space-y-6">
-                <form class="space-y-6" (ngSubmit)="onRegister()">
-                    <app-form-input
-                        id="name"
-                        name="name"
-                        type="text"
-                        label="Full Name"
-                        placeholder="Enter your full name"
-                        [(value)]="registerForm.name"
-                        [required]="true">
-                    </app-form-input>
-
-                    <app-form-input
-                        id="register-email"
-                        name="email"
-                        type="email"
-                        label="Email address"
-                        placeholder="Enter your email"
-                        [(value)]="registerForm.email"
-                        [required]="true">
-                    </app-form-input>
-
-                    <app-form-input
-                        id="register-password"
-                        name="password"
-                        type="password"
-                        label="Password"
-                        placeholder="Create a password"
-                        [(value)]="registerForm.password"
-                        [required]="true">
-                    </app-form-input><app-form-input
-                    id="confirm-password"
-                    name="confirm-password"
-                    type="password"
-                    label="Confirm Password"
-                    placeholder="Confirm your password"
-                    [(value)]="registerForm.confirmPassword"
-                    [required]="true">
-                </app-form-input>
-
-                    <div>
-                        <button 
-                            type="submit"
-                            class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 border border-transparent rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Create Account
-                        </button>
-                    </div>
-                </form>
-            </div>
-        }
+<div
+  class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-900 sm:px-6 lg:px-8"
+>
+  <div class="w-full max-w-md space-y-8">
+    <!-- Logo and Title -->
+    <div class="text-center">
+      <div class="flex justify-center">
+        <img
+          src="/assets/images/logos/logo.png"
+          alt="Exam Nest Logo"
+          class="w-auto h-12"
+        />
+      </div>
+      <h2 class="mt-6 text-3xl font-bold text-white">Welcome to Exam Nest</h2>
+      <p class="mt-2 text-sm text-gray-400">
+        Your gateway to seamless online examinations
+      </p>
     </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-gray-700">
+      <button
+        (click)="activeTab = 'login'"
+        [class]="
+          activeTab === 'login'
+            ? 'flex-1 py-4 text-center text-blue-400 border-b-2 border-blue-500'
+            : 'flex-1 py-4 text-center text-gray-400 border-b-2 border-transparent hover:text-blue-400'
+        "
+        class="transition-colors"
+      >
+        Login
+      </button>
+      <button
+        (click)="activeTab = 'register'"
+        [class]="
+          activeTab === 'register'
+            ? 'flex-1 py-4 text-center text-blue-400 border-b-2 border-blue-500'
+            : 'flex-1 py-4 text-center text-gray-400 border-b-2 border-transparent hover:text-blue-400'
+        "
+        class="transition-colors"
+      >
+        Register
+      </button>
+    </div>
+
+    <!-- Login Form -->
+    @if (activeTab === 'login') {
+    <div class="mt-8 space-y-6">
+      <form class="space-y-6" (ngSubmit)="onLogin()">
+        <app-form-input
+          id="email"
+          name="email"
+          type="email"
+          label="Email address"
+          placeholder="Enter your email"
+          [(value)]="loginForm.email"
+          [required]="true"
+        >
+        </app-form-input>
+
+        <app-form-input
+          id="password"
+          name="password"
+          type="password"
+          label="Password"
+          placeholder="Enter your password"
+          [(value)]="loginForm.password"
+          [required]="true"
+        >
+        </app-form-input>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              class="w-4 h-4 text-blue-500 bg-gray-800 border-gray-700 rounded focus:ring-blue-500"
+            />
+            <label for="remember-me" class="block ml-2 text-sm text-gray-400"
+              >Remember me</label
+            >
+          </div>
+
+          <div class="text-sm">
+            <a href="#" class="font-medium text-blue-400 hover:text-blue-300"
+              >Forgot your password?</a
+            >
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 border border-transparent rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Sign in
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+
+    <!-- Register Form -->
+    @if (activeTab === 'register') {
+    <div class="mt-8 space-y-6">
+      <form class="space-y-6" (ngSubmit)="onRegister()">
+        <app-form-input
+          id="name"
+          name="name"
+          type="text"
+          label="Full Name"
+          placeholder="Enter your full name"
+          [(value)]="registerForm.name"
+          [required]="true"
+        >
+        </app-form-input>
+
+        <app-form-input
+          id="register-email"
+          name="email"
+          type="email"
+          label="Email address"
+          placeholder="Enter your email"
+          [(value)]="registerForm.email"
+          [required]="true"
+        >
+        </app-form-input>
+
+        <app-form-input
+          id="register-password"
+          name="password"
+          type="password"
+          label="Password"
+          placeholder="Create a password"
+          [(value)]="registerForm.password"
+          [required]="true"
+        >
+        </app-form-input
+        ><app-form-input
+          id="confirm-password"
+          name="confirm-password"
+          type="password"
+          label="Confirm Password"
+          placeholder="Confirm your password"
+          [(value)]="registerForm.confirmPassword"
+          [required]="true"
+        >
+        </app-form-input>
+
+        <div>
+          <button
+            type="submit"
+            class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 border border-transparent rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Create Account
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+  </div>
 </div>
