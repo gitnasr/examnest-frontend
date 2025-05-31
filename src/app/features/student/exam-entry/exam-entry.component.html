@@ -1,0 +1,66 @@
+<div class="p-6 bg-gray-800 rounded-lg shadow-md">
+  <div class="mb-6">
+    <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      Enter Exam ID
+    </h3>
+    <p class="text-sm text-gray-300">
+      Enter the exam ID provided by your instructor to access the exam.
+    </p>
+  </div>
+
+  <div class="space-y-4">
+    <div class="flex flex-col space-y-2">
+      <label
+        for="examId"
+        class="text-sm font-medium text-gray-700 dark:text-gray-300"
+      >
+        Exam ID <span class="text-red-500">*</span>
+      </label>
+
+      <div class="relative">
+        <input
+          id="examId"
+          type="text"
+          pInputText
+          [(ngModel)]="examId"
+          placeholder="Enter exam ID (e.g., EX-001)"
+          [disabled]="isLoading"
+          maxlength="20"
+          class="w-full p-2 font-mono text-lg tracking-wider text-center text-gray-900 border border-gray-300 rounded-md bg-gray-50 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        Exam IDs typically start with "EX-" followed by numbers
+      </p>
+    </div>
+
+    <p-button
+      label="Start Exam"
+      icon="pi pi-play"
+      [disabled]="!examId.trim() || isLoading"
+      [loading]="isLoading"
+      styleClass="w-full text-lg py-3"
+      severity="primary"
+    >
+    </p-button>
+  </div>
+
+  <!-- Additional Information -->
+  <div class="p-4 mt-8 rounded-lg bg-blue-50 dark:bg-gray-700">
+    <div class="flex items-start space-x-3">
+      <i class="pi pi-info-circle text-blue-600 dark:text-blue-300 mt-0.5"></i>
+      <div class="text-sm text-blue-800 dark:text-blue-200">
+        <p class="mb-1 font-medium">Before starting your exam:</p>
+        <ul
+          class="space-y-1 text-xs text-gray-700 list-disc list-inside dark:text-gray-300"
+        >
+          <li>Ensure you have a stable internet connection</li>
+          <li>Close unnecessary applications and browser tabs</li>
+          <li>Have your ID ready for verification if required</li>
+          <li>Make sure your device is charged or plugged in</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
