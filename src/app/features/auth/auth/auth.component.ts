@@ -2,8 +2,8 @@ import { Router, RouterModule } from '@angular/router';
 
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormInputComponent } from '../../../shared/components/form-input/form-input.component';
 import { FormsModule } from '@angular/forms';
+import { FormInputComponent } from '../../../shared/components/form-input/form-input.component';
 
 @Component({
   selector: 'app-auth',
@@ -28,7 +28,7 @@ export class AuthComponent {
   };
 
   constructor(private router: Router) {}
-    // In the feature we will determ which dashboard to navigate to based on user role
+    // In the future we will determine which dashboard to navigate to based on user role
 
   onLogin() {
     console.log('Login form submitted:', this.loginForm);
@@ -36,7 +36,8 @@ export class AuthComponent {
   }
 
   onRegister() {
-    console.log('Register form submitted:', this.registerForm);
+    // Use a logging service to handle logs securely
+   console.log('Register form submitted', { form: this.registerForm });
 
     this.router.navigate(['/student']);
   }
