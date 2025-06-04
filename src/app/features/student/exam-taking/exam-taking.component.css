@@ -1,0 +1,16 @@
+/* Component-specific styles can be added here if needed */
+.bg-maroon-600 {
+    background-color: #7c2d12;
+}
+
+.hover\:bg-maroon-700:hover {
+    background-color: #6b2812;
+}
+
+.focus\:ring-maroon-500:focus {
+    outline-color: #8b2f14;
+}
+
+.border-maroon-600 {
+    border-color: #7c2d12;
+}

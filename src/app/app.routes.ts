@@ -17,25 +17,8 @@ export const routes: Routes = [
   },
   {
     path: 'student',
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./features/student/dashboard/dashboard.component').then(
-            (m) => m.DashboardComponent
-          ),
-      },
-
-      {
-        path: '**',
-        loadComponent: () =>
-          import('./features/not-found/not-found.component').then(
-            (m) => m.NotFoundComponent
-          ),
-      },
-    ],
+    loadChildren: () =>
+      import('./features/student/student.routes').then((m) => m.STUDENT_ROUTES),
   },
   {
     path: '**',
