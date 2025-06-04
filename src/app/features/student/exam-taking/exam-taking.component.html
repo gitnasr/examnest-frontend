@@ -1,0 +1,184 @@
+<div class="min-h-screen bg-slate-900">
+  @if (examData) {
+    <div class="sticky top-0 z-40 border-b bg-slate-900/95 backdrop-blur-md border-slate-700">
+      <div class="container max-w-6xl px-4 py-3 mx-auto lg:px-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center flex-1 min-w-0 gap-3">
+            <div class="flex-shrink-0 w-2 h-2 rounded-full bg-emerald-500"></div>
+            <span class="text-sm truncate text-slate-300">
+              {{ examData.title || "Loading Exam..." }}
+            </span>
+            <div class="items-center hidden text-xs sm:flex text-slate-400">
+              <span class="mx-2">|</span>
+              <span>{{ getAnsweredCount() }}/{{ examData.totalQuestions || 0 }}</span>
+            </div>
+          </div>
+          <div class="flex-shrink-0 ml-3">
+            <app-timer [endTime]="examData.endTime!" (timeExpired)="onTimeExpired()"></app-timer>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="container max-w-6xl px-4 py-6 pb-20 mx-auto lg:px-6">
+    <div class="mb-8">
+      <div class="flex flex-col gap-4">
+        <div class="flex-1">
+          <h1 class="text-2xl font-bold text-white lg:text-3xl">
+            {{ examData.title || "Loading Exam..." }}
+          </h1>
+          <div class="flex flex-col gap-2 mt-3 text-sm text-slate-400 sm:flex-row sm:items-center">
+            <div class="flex items-center">
+              <span>Cybersecurity | Alexandria Branch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (!examData) {
+      <div class="flex items-center justify-center p-12">
+        <div class="text-center">
+          <div class="w-8 h-8 mx-auto mb-4 border-2 rounded-full border-maroon-600 border-t-transparent animate-spin"></div>
+          <p class="text-slate-400">Loading exam...</p>
+        </div>
+      </div>
+    }
+
+    @if (examData) {
+      <div class="space-y-6">
+        @for (question of examData.questions; track question.id; let questionIndex = $index) {
+          <div
+            [id]="'question-' + question.id"
+            class="transition-all duration-200 border shadow-sm bg-slate-800 rounded-xl border-slate-700 hover:shadow-md hover:border-slate-600"
+            [class.border-l-4]="question.selectedAnswer"
+            [class.border-l-emerald-500]="question.selectedAnswer"
+            [class.bg-emerald-950]="question.selectedAnswer"
+          >
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-white">
+                  Question {{ questionIndex + 1 }}
+                </h3>
+                <div class="flex items-center">
+                  @if (question.selectedAnswer) {
+                    <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full text-emerald-300 bg-emerald-900/30">
+                      <div class="w-2 h-2 mr-2 rounded-full bg-emerald-500"></div>
+                      Answered
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full text-amber-300 bg-amber-900/30">
+                      <div class="w-2 h-2 mr-2 bg-orange-500 rounded-full"></div>
+                      Pending
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <app-question
+                [question]="question"
+                (answerSelected)="onAnswerSelect($event.questionId, $event.answerId)"
+              ></app-question>
+            </div>
+          </div>
+        }
+
+        @if (!examData.questions || examData.questions.length === 0) {
+          <div class="p-12 text-center border bg-slate-800 rounded-xl border-slate-700">
+            <p class="text-slate-400">No questions available for this exam.</p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+  @if (examData) {
+    <div class="fixed bottom-0 left-0 right-0 z-30 border-t bg-slate-900/95 backdrop-blur-md border-slate-700">
+      <div class="container max-w-6xl px-4 py-4 mx-auto lg:px-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <!-- Progress Info -->
+          <div class="flex items-center justify-center gap-4 sm:gap-6">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+              <span class="text-sm font-medium text-slate-300">
+                {{ getAnsweredCount() }}/{{ examData.totalQuestions }}
+              </span>
+            </div>
+            <div class="text-sm text-slate-400">
+              {{ getProgress().toFixed(1) }}% Complete
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="flex-1 max-w-xs mx-0 sm:mx-6">
+            <div class="h-2 overflow-hidden rounded-full bg-slate-700">
+              <div
+                class="h-full transition-all duration-500 ease-out rounded-full bg-maroon-600"
+                [style.width.%]="getProgress()"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            (click)="onSubmitExam()"
+            type="button"
+            [disabled]="isSubmitting"
+            class="px-6 py-2.5 text-sm font-semibold text-white transition-all duration-200 rounded-lg shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+            [class]="canSubmit() ? 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500' : 'bg-maroon-600 hover:bg-maroon-700 focus:ring-maroon-500'"
+          >
+            {{ isSubmitting ? "Submitting..." : "Submit Exam" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+  @if (showSubmitDialog) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" (click)="cancelSubmit()">
+      <div
+        class="w-full max-w-md border shadow-xl bg-slate-800 rounded-xl border-slate-700"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="p-6">
+          <h3 class="mb-4 text-xl font-semibold text-white">
+            Submit Incomplete Exam?
+          </h3>
+          <p class="mb-6 text-slate-400">
+            You have {{ getUnansweredQuestions().length }} unanswered questions. Are you sure you want to submit?
+          </p>
+
+          <div class="mb-6">
+            <p class="mb-3 text-sm font-medium text-white">
+              Unanswered Questions:
+            </p>
+            <div class="flex flex-wrap gap-2">
+              @for (question of getUnansweredQuestions(); track question.id) {
+                <span class="px-2.5 py-1 text-xs font-medium text-amber-300 bg-amber-900/30 rounded-md">
+                  #{{ question.id }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              (click)="cancelSubmit()"
+              type="button"
+              class="flex-1 px-4 py-2.5 text-sm font-medium text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+            >
+              Review Questions
+            </button>
+            <button
+              (click)="confirmSubmitWithUnanswered()"
+              type="button"
+              class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-maroon-600 hover:bg-maroon-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-maroon-500"
+            >
+              Submit Anyway
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
