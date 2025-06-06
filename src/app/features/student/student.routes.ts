@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { examEndDateGuard } from './guards/exam-end-date.guard';
 
 export const STUDENT_ROUTES: Routes = [
   {
@@ -22,9 +23,17 @@ export const STUDENT_ROUTES: Routes = [
   },
   {
     path: 'exam-taking/:examId',
+    canActivate: [examEndDateGuard],
     loadComponent: () =>
       import('./exam-taking/exam-taking.component').then(
         (m) => m.ExamTakingComponent
+      ),
+  },
+  {
+    path: 'closed',
+    loadComponent: () =>
+      import('./exam-closed/exam-closed.component').then(
+        (m) => m.ExamClosedComponent
       ),
   },
   {
