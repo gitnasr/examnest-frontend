@@ -1,0 +1,222 @@
+/* Custom styles for the courses component */
+
+/* Dark mode support for PrimeNG components */
+:host ::ng-deep .p-card {
+  @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
+}
+
+:host ::ng-deep .p-card .p-card-body {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-card .p-card-title {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-card .p-card-content {
+  @apply text-gray-600 dark:text-gray-400;
+}
+
+/* Table styling */
+:host ::ng-deep .p-datatable {
+  @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-header {
+  @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  @apply bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr {
+  @apply border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  @apply bg-gray-50 dark:bg-gray-700;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  @apply bg-blue-50 dark:bg-blue-900/20;
+}
+
+/* Dialog styling */
+:host ::ng-deep .p-dialog {
+  @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header {
+  @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-title {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+/* Input styling */
+:host ::ng-deep .p-inputtext {
+  @apply bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-inputtext:focus {
+  @apply border-blue-500 dark:border-blue-400 ring-blue-500 dark:ring-blue-400;
+}
+
+:host ::ng-deep .p-inputtext.ng-invalid {
+  @apply border-red-500 dark:border-red-400;
+}
+
+/* Dropdown styling */
+:host ::ng-deep .p-dropdown {
+  @apply bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-dropdown:not(.p-disabled):hover {
+  @apply border-gray-400 dark:border-gray-500;
+}
+
+:host ::ng-deep .p-dropdown:not(.p-disabled).p-focus {
+  @apply border-blue-500 dark:border-blue-400 ring-blue-500 dark:ring-blue-400;
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-trigger {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+:host ::ng-deep .p-dropdown-panel {
+  @apply bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+  @apply bg-gray-100 dark:bg-gray-600;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  @apply bg-blue-500 dark:bg-blue-600 text-white;
+}
+
+/* Badge styling */
+:host ::ng-deep .p-badge {
+  @apply text-xs font-medium;
+}
+
+/* Message styling */
+:host ::ng-deep .p-message {
+  @apply border-0;
+}
+
+:host ::ng-deep .p-message.p-message-error {
+  @apply bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200;
+}
+
+/* Toast styling */
+:host ::ng-deep .p-toast .p-toast-message {
+  @apply border-0;
+}
+
+:host ::ng-deep .p-toast .p-toast-message.p-toast-message-success {
+  @apply bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200;
+}
+
+:host ::ng-deep .p-toast .p-toast-message.p-toast-message-error {
+  @apply bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200;
+}
+
+:host ::ng-deep .p-toast .p-toast-message.p-toast-message-warn {
+  @apply bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200;
+}
+
+/* Confirmation dialog styling */
+:host ::ng-deep .p-confirmdialog {
+  @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
+}
+
+:host ::ng-deep .p-confirmdialog .p-confirmdialog-header {
+  @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-confirmdialog .p-confirmdialog-title {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-confirmdialog .p-confirmdialog-content {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+:host ::ng-deep .p-confirmdialog .p-confirmdialog-footer {
+  @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid {
+    @apply grid-cols-1;
+  }
+  
+  .flex.space-x-3 {
+    @apply flex-col space-y-2 space-x-0;
+  }
+  
+  .flex.space-x-2 {
+    @apply flex-col space-y-1 space-x-0;
+  }
+}
+
+/* Loading spinner styling */
+:host ::ng-deep .p-progressspinner {
+  @apply text-blue-500 dark:text-blue-400;
+}
+
+/* Tooltip styling */
+:host ::ng-deep .p-tooltip {
+  @apply bg-gray-900 dark:bg-gray-700 text-white;
+}
+
+/* Pagination styling */
+:host ::ng-deep .p-paginator {
+  @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+  @apply bg-white dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page:hover {
+  @apply bg-gray-100 dark:bg-gray-500;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  @apply bg-blue-500 dark:bg-blue-600 text-white border-blue-500 dark:border-blue-600;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-first,
+:host ::ng-deep .p-paginator .p-paginator-prev,
+:host ::ng-deep .p-paginator .p-paginator-next,
+:host ::ng-deep .p-paginator .p-paginator-last {
+  @apply bg-white dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-300;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-first:hover,
+:host ::ng-deep .p-paginator .p-paginator-prev:hover,
+:host ::ng-deep .p-paginator .p-paginator-next:hover,
+:host ::ng-deep .p-paginator .p-paginator-last:hover {
+  @apply bg-gray-100 dark:bg-gray-500;
+} 

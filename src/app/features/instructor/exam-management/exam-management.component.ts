@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,11 +11,14 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { BadgeModule } from 'primeng/badge';
+import { TooltipModule } from 'primeng/tooltip';
 import { ExamService } from '../../../shared/services/exam.service';
 import { CourseService } from '../../../shared/services/course.service';
-import { Exam, ExamCreatePayload, Course } from '../../../shared/interfaces/exam.interface';
-import { ApiResponse } from '../../../shared/interfaces/auth.interface';
+import { Exam, ExamCreatePayload, Course, ApiResponse } from '../../../shared/interfaces/api.interface';
 import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
@@ -33,7 +37,11 @@ import { AuthService } from '../../../shared/services/auth.service';
     TableModule,
     DialogModule,
     MessageModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    ConfirmDialogModule,
+    ToastModule,
+    BadgeModule,
+    TooltipModule
   ],
   templateUrl: './exam-management.component.html',
   styleUrls: ['./exam-management.component.css']
@@ -70,10 +78,8 @@ export class ExamManagementComponent implements OnInit {
   private loadExams(): void {
     this.isLoading = true;
     this.examService.getExams(1).subscribe({
-      next: (response: ApiResponse<Exam[]>) => {
-        if (response.data) {
-          this.exams = response.data;
-        }
+      next: (response: Exam[]) => {
+        this.exams = response;
         this.isLoading = false;
       },
       error: (error: any) => {
@@ -85,10 +91,12 @@ export class ExamManagementComponent implements OnInit {
 
   private loadCourses(): void {
     this.courseService.getCourses(1).subscribe({
-      next: (response: ApiResponse<Course[]>) => {
-        if (response.data) {
-          this.courses = response.data;
-        }
+      next: (response: Course[]) => {
+        // Map courseID to id if needed
+        this.courses = response.map((course: any) => ({
+          ...course,
+          id: course.id ?? course.courseID
+        }));
       },
       error: (error: any) => {
         console.error('Failed to load courses:', error);
@@ -116,10 +124,8 @@ export class ExamManagementComponent implements OnInit {
       };
 
       this.examService.createExam(examData).subscribe({
-        next: (response: ApiResponse<Exam>) => {
-          if (response.data) {
-            this.exams.unshift(response.data);
-          }
+        next: (response: Exam) => {
+          this.exams.unshift(response);
           this.isSubmitting = false;
           this.showCreateDialog = false;
           this.examForm.reset();
@@ -151,7 +157,7 @@ export class ExamManagementComponent implements OnInit {
   }
 
   getCourseName(courseId: number): string {
-    const course = this.courses.find(c => c.id === courseId);
+    const course = this.courses.find(c => c.courseID === courseId);
     return course?.courseName || 'Unknown Course';
   }
 

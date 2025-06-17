@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { UserInfo, UserRole } from '../../interfaces/auth.interface';
+import { UserInfo, Roles } from '../../interfaces/api.interface';
 
 @Component({
   selector: 'app-nav-bar',
@@ -75,15 +75,15 @@ export class NavBarComponent implements OnInit {
     this.router.navigate(['/auth']);
   }
 
-  getRoleName(role: UserRole): string {
+  getRoleName(role: Roles): string {
     switch (role) {
-      case UserRole.Student:
+      case Roles.Student:
         return 'Student';
-      case UserRole.Instructor:
+      case Roles.Instructor:
         return 'Instructor';
-      case UserRole.Admin:
+      case Roles.Admin:
         return 'Admin';
-      case UserRole.SuperAdmin:
+      case Roles.SuperAdmin:
         return 'Super Admin';
       default:
         return 'Unknown';

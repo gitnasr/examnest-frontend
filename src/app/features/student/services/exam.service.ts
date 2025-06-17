@@ -1,8 +1,7 @@
 import { Observable, map, forkJoin, switchMap } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ExamService as SharedExamService } from '../../../shared/services/exam.service';
-import { ExamDisplayResponse, ExamAnswerDTO, SubmissionPayload, QuestionBank, Choice, Exam } from '../../../shared/interfaces/exam.interface';
-import { ApiResponse } from '../../../shared/interfaces/auth.interface';
+import { ExamDisplayResponse, ExamAnswerDTO, SubmissionPayload, QuestionBank, Choice, Exam } from '../../../shared/interfaces/api.interface';
 
 export interface Question {
   id: number;
@@ -33,16 +32,12 @@ export class ExamService {
       examQuestions: this.sharedExamService.getExamDisplay(examIdNum)
     }).pipe(
       map(({ examDetails, examQuestions }) => {
-        if (!examQuestions.success || !examQuestions.data) {
+        if (!examQuestions.questions || examQuestions.questions.length === 0) {
           throw new Error('Exam questions not found');
         }
 
-        if (!examDetails.success || !examDetails.data) {
-          throw new Error('Exam details not found');
-        }
-
-        const exam = examDetails.data;
-        const questions: Question[] = examQuestions.data.map((q: QuestionBank) => ({
+        const exam = examDetails;
+        const questions: Question[] = examQuestions.questions.map((q: QuestionBank) => ({
           id: q.questionId,
           text: q.questionText,
           options: q.choices?.map((c: Choice) => ({

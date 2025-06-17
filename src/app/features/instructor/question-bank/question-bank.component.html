@@ -1,0 +1,346 @@
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <app-nav-bar></app-nav-bar>
+  
+  <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Question Bank</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Manage your questions and choices for exams
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <p-button 
+            label="Back to Dashboard" 
+            icon="pi pi-arrow-left" 
+            severity="secondary"
+            (onClick)="navigateBack()">
+          </p-button>
+          <p-button 
+            label="Add Question" 
+            icon="pi pi-plus" 
+            (onClick)="openNewQuestion()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="mb-6">
+      <p-message severity="error" [text]="error"></p-message>
+    </div>
+
+    <!-- Questions Table -->
+    <div *ngIf="!isLoading && !error">
+      <p-card>
+        <p-table 
+          [value]="questions" 
+          [paginator]="true" 
+          [rows]="rowsPerPage"
+          [totalRecords]="totalRecords"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} questions"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          (onPage)="onPageChange($event)"
+          styleClass="p-datatable-sm">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>ID</th>
+              <th>Question</th>
+              <th>Course</th>
+              <th>Type</th>
+              <th>Points</th>
+              <th>Model Answer</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-question>
+            <tr>
+              <td>{{ question.questionId }}</td>
+              <td>
+                <div class="max-w-xs">
+                  <div class="font-medium text-gray-900 dark:text-gray-100">
+                    {{ truncateText(question.questionText, 80) }}
+                  </div>
+                </div>
+              </td>
+              <td>{{ getCourseName(question.courseId) }}</td>
+              <td>
+                <p-badge 
+                  [value]="getQuestionTypeLabel(question.questionType)" 
+                  [severity]="getQuestionTypeColor(question.questionType)">
+                </p-badge>
+              </td>
+              <td>{{ question.points }}</td>
+              <td>
+                <div class="max-w-xs">
+                  {{ truncateText(question.modelAnswer || 'N/A', 60) }}
+                </div>
+              </td>
+              <td>
+                <div class="flex space-x-2">
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    severity="secondary" 
+                    size="small"
+                    pTooltip="Edit Question"
+                    (onClick)="editQuestion(question)">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-list" 
+                    severity="info" 
+                    size="small"
+                    pTooltip="Manage Choices"
+                    (onClick)="openChoiceDialog(question)">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    size="small"
+                    pTooltip="Delete Question"
+                    (onClick)="deleteQuestion(question)">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="py-8 text-center text-gray-500 dark:text-gray-400">
+                <div class="flex flex-col items-center space-y-2">
+                  <i class="text-4xl pi pi-question-circle"></i>
+                  <p>No questions found</p>
+                  <p-button 
+                    label="Add First Question" 
+                    icon="pi pi-plus" 
+                    (onClick)="openNewQuestion()">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Question Dialog -->
+  <p-dialog 
+    [(visible)]="questionDialogVisible" 
+    [header]="selectedQuestion ? 'Edit Question' : 'Add New Question'"
+    [modal]="true" 
+    [style]="{width: '600px'}"
+    [draggable]="false" 
+    [resizable]="false">
+    
+    <form [formGroup]="questionForm" class="space-y-4">
+      <!-- Course Selection -->
+      <div class="field">
+        <label for="courseId" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Course *
+        </label>
+        <p-dropdown 
+          id="courseId"
+          formControlName="courseId"
+          [options]="courses" 
+          optionLabel="courseName" 
+          optionValue="id"
+          placeholder="Select a course"
+          [showClear]="true"
+          styleClass="w-full">
+        </p-dropdown>
+        <small *ngIf="questionForm.get('courseId')?.invalid && questionForm.get('courseId')?.touched" 
+               class="p-error">Course is required</small>
+      </div>
+
+      <!-- Question Text -->
+      <div class="field">
+        <label for="questionText" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Question Text *
+        </label>
+        <textarea 
+          id="questionText"
+          formControlName="questionText"
+          pInputTextarea 
+          [rows]="4"
+          placeholder="Enter your question here..."
+          class="w-full">
+        </textarea>
+        <small *ngIf="questionForm.get('questionText')?.invalid && questionForm.get('questionText')?.touched" 
+               class="p-error">Question text is required</small>
+      </div>
+
+      <!-- Question Type -->
+      <div class="field">
+        <label for="questionType" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Question Type *
+        </label>
+        <p-dropdown 
+          id="questionType"
+          formControlName="questionType"
+          [options]="questionTypes" 
+          placeholder="Select question type"
+          styleClass="w-full">
+        </p-dropdown>
+        <small *ngIf="questionForm.get('questionType')?.invalid && questionForm.get('questionType')?.touched" 
+               class="p-error">Question type is required</small>
+      </div>
+
+      <!-- Model Answer -->
+      <div class="field">
+        <label for="modelAnswer" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Model Answer *
+        </label>
+        <input 
+          id="modelAnswer"
+          formControlName="modelAnswer"
+          pInputText 
+          placeholder="Enter the correct answer"
+          class="w-full">
+        <small *ngIf="questionForm.get('modelAnswer')?.invalid && questionForm.get('modelAnswer')?.touched" 
+               class="p-error">Model answer is required</small>
+      </div>
+
+      <!-- Points -->
+      <div class="field">
+        <label for="points" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Points *
+        </label>
+        <p-inputNumber 
+          id="points"
+          formControlName="points"
+          [min]="1" 
+          [max]="100"
+          placeholder="Enter points"
+          styleClass="w-full">
+        </p-inputNumber>
+        <small *ngIf="questionForm.get('points')?.invalid && questionForm.get('points')?.touched" 
+               class="p-error">Points must be between 1 and 100</small>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end space-x-2">
+        <p-button 
+          label="Cancel" 
+          severity="secondary" 
+          (onClick)="questionDialogVisible = false">
+        </p-button>
+        <p-button 
+          label="Save" 
+          (onClick)="saveQuestion()"
+          [disabled]="questionForm.invalid">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Choice Dialog -->
+  <p-dialog 
+    [(visible)]="choiceDialogVisible" 
+    header="Manage Choices"
+    [modal]="true" 
+    [style]="{width: '700px'}"
+    [draggable]="false" 
+    [resizable]="false">
+    
+    <div *ngIf="selectedQuestion" class="space-y-4">
+      <!-- Question Info -->
+      <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+        <h3 class="mb-2 font-semibold text-gray-900 dark:text-gray-100">Question:</h3>
+        <p class="text-gray-700 dark:text-gray-300">{{ selectedQuestion.questionText }}</p>
+      </div>
+
+      <!-- Add New Choice Form -->
+      <form [formGroup]="choiceForm" class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div class="field">
+            <label for="choiceLetter" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Choice Letter *
+            </label>
+            <input 
+              id="choiceLetter"
+              formControlName="choiceLetter"
+              pInputText 
+              placeholder="A, B, C, D..."
+              class="w-full">
+            <small *ngIf="choiceForm.get('choiceLetter')?.invalid && choiceForm.get('choiceLetter')?.touched" 
+                   class="p-error">Choice letter is required</small>
+          </div>
+
+          <div class="field md:col-span-2">
+            <label for="choiceText" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Choice Text *
+            </label>
+            <input 
+              id="choiceText"
+              formControlName="choiceText"
+              pInputText 
+              placeholder="Enter choice text"
+              class="w-full">
+            <small *ngIf="choiceForm.get('choiceText')?.invalid && choiceForm.get('choiceText')?.touched" 
+                   class="p-error">Choice text is required</small>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <p-button 
+            label="Add Choice" 
+            icon="pi pi-plus"
+            (onClick)="saveChoice()"
+            [disabled]="choiceForm.invalid">
+          </p-button>
+        </div>
+      </form>
+
+      <!-- Existing Choices -->
+      <div class="mt-6">
+        <h4 class="mb-3 font-semibold text-gray-900 dark:text-gray-100">Existing Choices:</h4>
+        <div class="space-y-2">
+          <div *ngFor="let choice of selectedChoices" 
+               class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+            <div class="flex items-center space-x-3">
+              <span class="font-semibold text-blue-600">{{ choice.choiceLetter }}.</span>
+              <span class="text-gray-700 dark:text-gray-300">{{ choice.choiceText }}</span>
+            </div>
+            <p-button 
+              icon="pi pi-trash" 
+              severity="danger" 
+              size="small"
+              (onClick)="deleteChoice(choice)">
+            </p-button>
+          </div>
+          <div *ngIf="selectedChoices.length === 0" class="py-4 text-center text-gray-500 dark:text-gray-400">
+            No choices added yet
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end">
+        <p-button 
+          label="Close" 
+          severity="secondary" 
+          (onClick)="choiceDialogVisible = false">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+  
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
+</div> 

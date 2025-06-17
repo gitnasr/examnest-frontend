@@ -7,8 +7,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ExamService } from '../../../shared/services/exam.service';
-import { StudentResult, SubmissionDetail } from '../../../shared/interfaces/exam.interface';
-import { ApiResponse } from '../../../shared/interfaces/auth.interface';
+import { StudentResult, SubmissionDetail, ApiResponse } from '../../../shared/interfaces/api.interface';
 import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
@@ -55,17 +54,10 @@ export class ExamResultsComponent implements OnInit {
   }
 
   private loadExamResults(): void {
-   
-
     this.examService.getStudentResults(22, this.examId!).subscribe({
-      next: (response: ApiResponse<StudentResult>) => {
-        if (response.data) {
-          this.result = response.data;
-          this.loadSubmissionDetails();
-        } else {
-          this.error = 'No results found for this exam';
-          this.isLoading = false;
-        }
+      next: (response: StudentResult) => {
+        this.result = response;
+        this.loadSubmissionDetails();
       },
       error: (error: any) => {
         this.error = error.message || 'Failed to load exam results';

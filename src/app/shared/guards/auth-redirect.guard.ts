@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { UserRole } from '../interfaces/auth.interface';
+import { Roles } from '../interfaces/api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +21,12 @@ export class AuthRedirectGuard implements CanActivate {
           const user = this.authService.getCurrentUserValue();
           if (user) {
             switch (user.role) {
-              case UserRole.Student:
+              case Roles.Student:
                 return this.router.createUrlTree(['/student/dashboard']);
-              case UserRole.Instructor:
+              case Roles.Instructor:
                 return this.router.createUrlTree(['/instructor']);
-              case UserRole.Admin:
-              case UserRole.SuperAdmin:
+              case Roles.Admin:
+              case Roles.SuperAdmin:
                 return this.router.createUrlTree(['/admin']);
               default:
                 return this.router.createUrlTree(['/student/dashboard']);

@@ -1,0 +1,241 @@
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <app-nav-bar></app-nav-bar>
+  
+  <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Course Management</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Manage your courses and curriculum
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <p-button 
+            label="New Course" 
+            icon="pi pi-plus" 
+            severity="success"
+            (onClick)="openNewCourse()">
+          </p-button>
+          <p-button 
+            label="Back to Dashboard" 
+            icon="pi pi-arrow-left" 
+            severity="secondary"
+            (onClick)="navigateBack()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <p-message 
+      *ngIf="error" 
+      severity="error" 
+      [text]="error" 
+      [closable]="true">
+    </p-message>
+
+    <!-- Filters -->
+    <p-card class="mb-6">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            Search Courses
+          </label>
+          <input 
+            type="text" 
+            pInputText 
+            placeholder="Search by course name..."
+            [(ngModel)]="searchTerm"
+            class="w-full">
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            Filter by Track
+          </label>
+          <p-dropdown 
+            [options]="tracks" 
+            [(ngModel)]="selectedTrack"
+            optionLabel="trackName"
+            placeholder="Select a track"
+            [showClear]="true"
+            class="w-full">
+          </p-dropdown>
+        </div>
+        <div class="flex items-end">
+          <p-button 
+            label="Clear Filters" 
+            icon="pi pi-times" 
+            severity="secondary"
+            (onClick)="clearFilters()">
+          </p-button>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Courses Table -->
+    <p-card>
+      <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+        <p-progressSpinner></p-progressSpinner>
+      </div>
+
+      <div *ngIf="!isLoading">
+        <div *ngIf="filteredCourses.length === 0" class="py-12 text-center">
+          <i class="mb-4 text-6xl text-gray-400 pi pi-book"></i>
+          <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
+            No Courses Found
+          </h3>
+          <p class="mb-6 text-gray-600 dark:text-gray-400">
+            {{ courses.length === 0 ? 'No courses have been created yet.' : 'No courses match your current filters.' }}
+          </p>
+          <p-button 
+            *ngIf="courses.length === 0"
+            label="Create Your First Course" 
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="openNewCourse()">
+          </p-button>
+        </div>
+
+        <p-table 
+          *ngIf="filteredCourses.length > 0"
+          [value]="filteredCourses" 
+          [paginator]="true" 
+          [rows]="rowsPerPage"
+          [totalRecords]="totalRecords"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} courses"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          (onPage)="onPageChange($event)"
+          styleClass="p-datatable-sm"
+          responsiveLayout="scroll">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Course Name</th>
+              <th>Track</th>
+              <th>Branch</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-course>
+            <tr>
+              <td>
+                <div class="font-medium text-gray-900 dark:text-gray-100">
+                  {{ course.courseName }}
+                </div>
+              </td>
+              <td>
+                <p-badge 
+                  [value]="getCourseTrackName(course)" 
+                  severity="info">
+                </p-badge>
+              </td>
+              <td>
+                <span class="text-gray-600 dark:text-gray-400">
+                  {{ getCourseBranchName(course) }}
+                </span>
+              </td>
+              <td>
+                <div class="flex space-x-2">
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    severity="info" 
+                    size="small"
+                    pTooltip="Edit Course"
+                    (onClick)="editCourse(course)">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    size="small"
+                    pTooltip="Delete Course"
+                    (onClick)="deleteCourse(course)">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Course Dialog -->
+  <p-dialog 
+    [(visible)]="courseDialogVisible" 
+    [header]="selectedCourse ? 'Edit Course' : 'New Course'"
+    [modal]="true" 
+    [style]="{width: '500px'}"
+    [draggable]="false" 
+    [resizable]="false">
+    
+    <form [formGroup]="courseForm" (ngSubmit)="saveCourse()">
+      <div class="space-y-4">
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            Course Name *
+          </label>
+          <input 
+            type="text" 
+            pInputText 
+            formControlName="courseName"
+            placeholder="Enter course name"
+            class="w-full"
+            [class.ng-invalid]="courseForm.get('courseName')?.invalid && courseForm.get('courseName')?.touched">
+          <small 
+            *ngIf="courseForm.get('courseName')?.invalid && courseForm.get('courseName')?.touched"
+            class="text-red-500">
+            <span *ngIf="courseForm.get('courseName')?.errors?.['required']">Course name is required.</span>
+            <span *ngIf="courseForm.get('courseName')?.errors?.['minlength']">Course name must be at least 3 characters.</span>
+            <span *ngIf="courseForm.get('courseName')?.errors?.['maxlength']">Course name cannot exceed 100 characters.</span>
+          </small>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            Track *
+          </label>
+          <p-dropdown 
+            [options]="tracks" 
+            formControlName="trackId"
+            optionLabel="trackName"
+            optionValue="id"
+            placeholder="Select a track"
+            class="w-full"
+            [class.ng-invalid]="courseForm.get('trackId')?.invalid && courseForm.get('trackId')?.touched">
+          </p-dropdown>
+          <small 
+            *ngIf="courseForm.get('trackId')?.invalid && courseForm.get('trackId')?.touched"
+            class="text-red-500">
+            Track is required.
+          </small>
+        </div>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end space-x-2">
+        <p-button 
+          label="Cancel" 
+          severity="secondary"
+          (onClick)="onCancel()">
+        </p-button>
+        <p-button 
+          label="Save" 
+          severity="success"
+          [disabled]="courseForm.invalid"
+          (onClick)="saveCourse()">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+  
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
+</div> 

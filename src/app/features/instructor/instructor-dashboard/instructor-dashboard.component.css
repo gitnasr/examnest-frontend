@@ -1,0 +1,216 @@
+/* Custom styles for instructor dashboard */
+
+/* Card hover effects */
+.p-card {
+  transition: all 0.3s ease;
+}
+
+.p-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Quick action buttons */
+.quick-action-btn {
+  transition: all 0.3s ease;
+}
+
+.quick-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Chart container */
+.chart-container {
+  position: relative;
+  height: 300px;
+}
+
+/* Activity feed styling */
+.activity-item {
+  transition: background-color 0.2s ease;
+}
+
+.activity-item:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Dark mode adjustments */
+.dark .activity-item:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom scrollbar for tables */
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Dark mode scrollbar */
+.dark .p-datatable .p-datatable-wrapper::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.dark .p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+.dark .p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Loading animation */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Badge animations */
+.p-badge {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Chart responsiveness */
+.p-chart {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Table row hover effects */
+.p-datatable .p-datatable-tbody > tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.dark .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Avatar styling */
+.p-avatar {
+  border: 2px solid #e5e7eb;
+}
+
+.dark .p-avatar {
+  border-color: #4b5563;
+}
+
+/* Message styling */
+.p-message {
+  border-radius: 8px;
+  border: none;
+}
+
+/* Progress bar styling */
+.p-progressbar {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Button styling */
+.p-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.p-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card header styling */
+.p-card .p-card-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.dark .p-card .p-card-header {
+  border-bottom-color: #4b5563;
+}
+
+/* Statistics number styling */
+.stats-number {
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* Activity icon styling */
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+  .stats-number {
+    font-size: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 1.875rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+} 

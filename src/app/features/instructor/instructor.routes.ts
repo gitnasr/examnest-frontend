@@ -15,4 +15,25 @@ export const INSTRUCTOR_ROUTES: Routes = [
         (m) => m.ExamManagementComponent
       ),
   },
+  {
+    path: 'question-bank',
+    loadComponent: () =>
+      import('./question-bank/question-bank.component').then(
+        (m) => m.QuestionBankComponent
+      ),
+  },
+  {
+    path: 'students',
+    loadComponent: () =>
+      import('./students/students.component').then(
+        (m) => m.StudentsComponent
+      ),
+  },
+  {
+    path: 'courses',
+    loadComponent: () =>
+      import('./courses/courses.component').then(
+        (m) => m.CoursesComponent
+      ),
+  },
 ]; 

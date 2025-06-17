@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiResponse } from '../interfaces/auth.interface';
+import { ApiResponse } from '../interfaces/api.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_BASE_URL = 'https://localhost:7238/api';
+  private readonly API_BASE_URL = 'https://examnest-erbxf9c8bwgqbxev.italynorth-01.azurewebsites.net/api';
 
   constructor(private http: HttpClient) {}
 

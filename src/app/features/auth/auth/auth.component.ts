@@ -4,14 +4,20 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormInputComponent } from '../../../shared/components/form-input/form-input.component';
 import { AuthService } from '../../../shared/services/auth.service';
-import { AuthenticationDTO, RegisterDTO, UserRole } from '../../../shared/interfaces/auth.interface';
+import { AuthenticationDTO, RegisterDTO, Roles } from '../../../shared/interfaces/api.interface';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, FormInputComponent, RouterModule],
+  imports: [CommonModule, FormsModule, FormInputComponent, RouterModule, ButtonModule, InputTextModule, CardModule, MessageModule, ProgressSpinnerModule],
 })
 export class AuthComponent implements OnInit {
   activeTab: 'login' | 'register' = 'login';
@@ -155,14 +161,14 @@ export class AuthComponent implements OnInit {
     }
 
     switch (user.role) {
-      case UserRole.Student:
+      case Roles.Student:
         this.router.navigate(['/student/dashboard']);
         break;
-      case UserRole.Instructor:
+      case Roles.Instructor:
         this.router.navigate(['/instructor']);
         break;
-      case UserRole.Admin:
-      case UserRole.SuperAdmin:
+      case Roles.Admin:
+      case Roles.SuperAdmin:
         this.router.navigate(['/admin']);
         break;
       default:

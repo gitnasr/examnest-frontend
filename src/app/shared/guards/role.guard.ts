@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { UserRole } from '../interfaces/auth.interface';
+import { Roles } from '../interfaces/api.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,7 @@ export class RoleGuard implements CanActivate {
           return false;
         }
 
-        const requiredRoles = route.data['roles'] as UserRole[];
+        const requiredRoles = route.data['roles'] as Roles[];
         if (!requiredRoles || requiredRoles.length === 0) {
           return true;
         }
@@ -42,16 +42,16 @@ export class RoleGuard implements CanActivate {
     );
   }
 
-  private redirectBasedOnRole(role: UserRole): void {
+  private redirectBasedOnRole(role: Roles): void {
     switch (role) {
-      case UserRole.Student:
+      case Roles.Student:
         this.router.navigate(['/student']);
         break;
-      case UserRole.Instructor:
+      case Roles.Instructor:
         this.router.navigate(['/instructor']);
         break;
-      case UserRole.Admin:
-      case UserRole.SuperAdmin:
+      case Roles.Admin:
+      case Roles.SuperAdmin:
         this.router.navigate(['/admin']);
         break;
       default:

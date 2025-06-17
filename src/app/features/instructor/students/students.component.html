@@ -1,0 +1,289 @@
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <app-nav-bar></app-nav-bar>
+  
+  <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Student Management</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            View and manage student information and assignments
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <p-button 
+            label="Back to Dashboard" 
+            icon="pi pi-arrow-left" 
+            severity="secondary"
+            (onClick)="navigateBack()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="mb-6">
+      <p-message severity="error" [text]="error"></p-message>
+    </div>
+
+    <!-- Filters -->
+    <div *ngIf="!isLoading && !error" class="mb-6">
+      <p-card>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <!-- Search -->
+          <div class="field">
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Search Students
+            </label>
+            <input 
+              [(ngModel)]="searchTerm"
+              pInputText 
+              placeholder="Search by name, email, or ID"
+              class="w-full">
+          </div>
+
+          <!-- Branch Filter -->
+          <div class="field">
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Branch
+            </label>
+            <p-dropdown 
+              [(ngModel)]="selectedBranch"
+              [options]="branches" 
+              optionLabel="branchName" 
+              placeholder="All Branches"
+              [showClear]="true"
+              styleClass="w-full">
+            </p-dropdown>
+          </div>
+
+          <!-- Track Filter -->
+          <div class="field">
+            <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Filter by Track
+            </label>
+            <p-dropdown 
+              [(ngModel)]="selectedTrack"
+              [options]="tracks" 
+              optionLabel="trackName" 
+              placeholder="All Tracks"
+              [showClear]="true"
+              styleClass="w-full">
+            </p-dropdown>
+          </div>
+
+          <!-- Clear Filters -->
+          <div class="flex items-end field">
+            <p-button 
+              label="Clear Filters" 
+              icon="pi pi-times" 
+              severity="secondary"
+              (onClick)="clearFilters()"
+              [disabled]="!searchTerm && !selectedBranch && !selectedTrack">
+            </p-button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Students Table -->
+    <div *ngIf="!isLoading && !error">
+      <p-card>
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Students ({{ filteredStudents.length }})
+          </h3>
+        </div>
+
+        <p-table 
+          [value]="filteredStudents" 
+          [paginator]="true" 
+          [rows]="rowsPerPage"
+          [totalRecords]="totalRecords"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} students"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          (onPage)="onPageChange($event)"
+          styleClass="p-datatable-sm">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Student</th>
+              <th>Email</th>
+              <th>Branch</th>
+              <th>Track</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="body" let-student>
+            <tr>
+              <td>
+                <div class="flex items-center space-x-3">
+                  <p-avatar 
+                    [label]="getStudentInitials(student)" 
+                    size="normal"
+                    styleClass="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
+                  </p-avatar>
+                  <div>
+                    <div class="font-semibold text-gray-900 dark:text-gray-100">
+                      {{ student.user?.name || 'Unknown Name' }}
+                    </div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                      ID: {{ student.userId }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="text-gray-700 dark:text-gray-300">
+                  {{ student.user?.email || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <span class="text-gray-700 dark:text-gray-300">
+                  {{ getBranchName(student.branchId) }}
+                </span>
+              </td>
+              <td>
+                <span class="text-gray-700 dark:text-gray-300">
+                  {{ getTrackName(student.trackId) }}
+                </span>
+              </td>
+              <td>
+                <p-badge 
+                  [value]="getStudentStatus(student)" 
+                  [severity]="getStatusColor(getStudentStatus(student))">
+                </p-badge>
+              </td>
+              <td>
+                <div class="flex space-x-2">
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    severity="secondary" 
+                    size="small"
+                    pTooltip="Edit Student"
+                    (onClick)="editStudent(student)">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    size="small"
+                    pTooltip="Delete Student"
+                    (onClick)="deleteStudent(student)">
+                  </p-button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="py-8 text-center text-gray-500 dark:text-gray-400">
+                <div class="flex flex-col items-center space-y-2">
+                  <i class="text-4xl pi pi-users"></i>
+                  <p>No students found</p>
+                  <p *ngIf="searchTerm || selectedBranch || selectedTrack" class="text-sm">
+                    Try adjusting your filters
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Edit Student Dialog -->
+  <p-dialog 
+    [(visible)]="editDialogVisible" 
+    header="Edit Student Assignment"
+    [modal]="true" 
+    [style]="{width: '500px'}"
+    [draggable]="false" 
+    [resizable]="false">
+    
+    <form [formGroup]="editForm" class="space-y-4">
+      <!-- Branch Selection -->
+      <div class="field">
+        <label for="branchId" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Branch *
+        </label>
+        <p-dropdown 
+          id="branchId"
+          formControlName="branchId"
+          [options]="branches" 
+          optionLabel="branchName" 
+          optionValue="id"
+          placeholder="Select a branch"
+          [showClear]="true"
+          (onChange)="onBranchChange()"
+          styleClass="w-full">
+        </p-dropdown>
+        <small *ngIf="editForm.get('branchId')?.invalid && editForm.get('branchId')?.touched" 
+               class="p-error">Branch is required</small>
+      </div>
+
+      <!-- Track Selection -->
+      <div class="field">
+        <label for="trackId" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          Track *
+        </label>
+        <p-dropdown 
+          id="trackId"
+          formControlName="trackId"
+          [options]="getTracksForBranch(editForm.get('branchId')?.value)" 
+          optionLabel="trackName" 
+          optionValue="id"
+          placeholder="Select a track"
+          [showClear]="true"
+          [disabled]="!editForm.get('branchId')?.value"
+          styleClass="w-full">
+        </p-dropdown>
+        <small *ngIf="editForm.get('trackId')?.invalid && editForm.get('trackId')?.touched" 
+               class="p-error">Track is required</small>
+        <small *ngIf="!editForm.get('branchId')?.value" 
+               class="text-gray-500">Please select a branch first</small>
+      </div>
+
+      <!-- Student Info Display -->
+      <div *ngIf="selectedStudent" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+        <h4 class="mb-2 font-semibold text-gray-900 dark:text-gray-100">Student Information:</h4>
+        <div class="space-y-1 text-sm">
+          <div><span class="font-medium">Name:</span> {{ selectedStudent.user?.name || 'Unknown' }}</div>
+          <div><span class="font-medium">Email:</span> {{ selectedStudent.user?.email || 'N/A' }}</div>
+          <div><span class="font-medium">ID:</span> {{ selectedStudent.userId }}</div>
+        </div>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end space-x-2">
+        <p-button 
+          label="Cancel" 
+          severity="secondary" 
+          (onClick)="editDialogVisible = false">
+        </p-button>
+        <p-button 
+          label="Save Changes" 
+          (onClick)="saveStudent()"
+          [disabled]="editForm.invalid">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+  
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
+</div> 

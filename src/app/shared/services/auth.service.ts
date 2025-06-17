@@ -7,13 +7,42 @@ import {
   AuthenticationDTO, 
   RegisterDTO, 
   RefreshTokenDTO, 
-  AuthResponse, 
-  UserInfo, 
-  UserRole, 
-  TokenPayload,
-  ApiResponse 
-} from '../interfaces/auth.interface';
+  ApiResponse,
+  Roles
+} from '../interfaces/api.interface';
 import { ApiService } from './api.service';
+
+// Auth-specific interfaces that extend the base ones
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user: UserInfo;
+}
+
+export interface UserInfo {
+  id: string;
+  email: string;
+  name: string;
+  role: Roles;
+  branchId?: number;
+  trackId?: number;
+}
+
+export interface TokenPayload {
+  jti: string;
+  unique_name: string;
+  nameid: string;
+  email: string;
+  name?: string;
+  role: string;
+  nbf: number;
+  exp: number;
+  iat: number;
+  iss: string;
+  aud: string;
+  sub?: string; // Optional for backward compatibility
+}
 
 @Injectable({
   providedIn: 'root'
@@ -176,12 +205,12 @@ export class AuthService {
     return this.isAuthenticatedSubject.value;
   }
 
-  hasRole(role: UserRole): boolean {
+  hasRole(role: Roles): boolean {
     const user = this.getCurrentUserValue();
     return user ? user.role >= role : false;
   }
 
-  hasAnyRole(roles: UserRole[]): boolean {
+  hasAnyRole(roles: Roles[]): boolean {
     const user = this.getCurrentUserValue();
     return user ? roles.includes(user.role) : false;
   }
@@ -248,22 +277,22 @@ export class AuthService {
       const decoded = jwtDecode<TokenPayload>(token);
       
       // Map the role string from JWT to UserRole enum
-      let role: UserRole;
+      let role: Roles;
       switch (decoded.role?.toLowerCase()) {
         case 'student':
-          role = UserRole.Student;
+          role = Roles.Student;
           break;
         case 'instructor':
-          role = UserRole.Instructor;
+          role = Roles.Instructor;
           break;
         case 'admin':
-          role = UserRole.Admin;
+          role = Roles.Admin;
           break;
         case 'superadmin':
-          role = UserRole.SuperAdmin;
+          role = Roles.SuperAdmin;
           break;
         default:
-          role = UserRole.Student; // Default to student if role is not recognized
+          role = Roles.Student; // Default to student if role is not recognized
       }
       
       return {
