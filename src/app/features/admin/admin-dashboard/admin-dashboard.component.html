@@ -1,0 +1,239 @@
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <app-nav-bar></app-nav-bar>
+  
+  <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Admin Dashboard</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            System overview and management controls
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <p-button 
+            label="User Management" 
+            icon="pi pi-users" 
+            severity="primary"
+            (onClick)="navigateToUserManagement()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <p-message 
+      *ngIf="error" 
+      severity="error" 
+      [text]="error" 
+      [closable]="true">
+    </p-message>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div *ngIf="!isLoading">
+      <!-- Statistics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Users -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ stats.totalUsers }}</p>
+            </div>
+            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+              <i class="pi pi-users text-blue-600 dark:text-blue-400 text-xl"></i>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Total Students -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Students</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ stats.totalStudents }}</p>
+            </div>
+            <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+              <i class="pi pi-user text-green-600 dark:text-green-400 text-xl"></i>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Total Instructors -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Instructors</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ stats.totalInstructors }}</p>
+            </div>
+            <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+              <i class="pi pi-user-edit text-purple-600 dark:text-purple-400 text-xl"></i>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Recent Registrations -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Recent Registrations</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ stats.recentRegistrations }}</p>
+            </div>
+            <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
+              <i class="pi pi-plus-circle text-orange-600 dark:text-orange-400 text-xl"></i>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <!-- System Statistics -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Branches -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Branches</h3>
+            <p-badge [value]="stats.totalBranches" severity="info"></p-badge>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Manage system branches</p>
+          <p-button 
+            label="Manage Branches" 
+            icon="pi pi-building" 
+            severity="secondary"
+            size="small"
+            (onClick)="navigateToBranchManagement()">
+          </p-button>
+        </p-card>
+
+        <!-- Tracks -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Tracks</h3>
+            <p-badge [value]="stats.totalTracks" severity="success"></p-badge>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Manage learning tracks</p>
+          <p-button 
+            label="Manage Tracks" 
+            icon="pi pi-sitemap" 
+            severity="secondary"
+            size="small"
+            (onClick)="navigateToTrackManagement()">
+          </p-button>
+        </p-card>
+
+        <!-- Courses & Exams -->
+        <p-card styleClass="h-full">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Content</h3>
+            <div class="flex space-x-2">
+              <p-badge [value]="stats.totalCourses" severity="warn"></p-badge>
+              <p-badge [value]="stats.totalExams" severity="danger"></p-badge>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Courses: {{ stats.totalCourses }} | Exams: {{ stats.totalExams }}</p>
+        </p-card>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- User Role Distribution -->
+        <p-card header="User Role Distribution">
+          <p-chart 
+            type="doughnut" 
+            [data]="userRoleData" 
+            [options]="userRoleOptions"
+            styleClass="w-full h-64">
+          </p-chart>
+        </p-card>
+
+        <!-- Registration Trend -->
+        <p-card header="Registration Trend">
+          <p-chart 
+            type="line" 
+            [data]="registrationTrendData" 
+            [options]="registrationTrendOptions"
+            styleClass="w-full h-64">
+          </p-chart>
+        </p-card>
+      </div>
+
+      <!-- System Usage Chart -->
+      <div class="mb-8">
+        <p-card header="System Usage Overview">
+          <p-chart 
+            type="bar" 
+            [data]="systemUsageData" 
+            [options]="systemUsageOptions"
+            styleClass="w-full h-64">
+          </p-chart>
+        </p-card>
+      </div>
+
+      <!-- Recent Activity and Quick Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Activity -->
+        <p-card header="Recent Activity">
+          <div class="space-y-4">
+            <div 
+              *ngFor="let activity of recentActivity" 
+              class="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div class="flex-shrink-0">
+                <i [class]="getActivityIcon(activity.type)" 
+                   [class]="getActivityColor(activity.status)"
+                   class="text-lg">
+                </i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {{ activity.title }}
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ activity.description }}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  {{ formatDate(activity.timestamp) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Quick Actions -->
+        <p-card header="Quick Actions">
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-3">
+              <p-button 
+                label="User Management" 
+                icon="pi pi-users" 
+                severity="primary"
+                styleClass="w-full"
+                (onClick)="navigateToUserManagement()">
+              </p-button>
+              
+              <p-button 
+                label="Branch Management" 
+                icon="pi pi-building" 
+                severity="secondary"
+                styleClass="w-full"
+                (onClick)="navigateToBranchManagement()">
+              </p-button>
+              
+              <p-button 
+                label="Track Management" 
+                icon="pi pi-sitemap" 
+                severity="secondary"
+                styleClass="w-full"
+                (onClick)="navigateToTrackManagement()">
+              </p-button>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div> 
