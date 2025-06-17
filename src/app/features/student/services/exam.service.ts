@@ -116,13 +116,20 @@ export class ExamService {
 
 
   getExamData(examId: string): Observable<ExamData> {
+    console.log('Getting exam data for:', examId);
     
-    return of({
+    const examData = {
       title: 'Sample Exam',
       totalQuestions: 10,
-      endTime: new Date('2025-06-07 02:25:55'),
+      endTime: new Date('2027-01-01 00:00:00'), // Past date to simulate ended exam
       questions: this.generateRandomQuestions(10)
-    });
+    };
+    
+    console.log('Exam end time:', examData.endTime);
+    console.log('Current time:', new Date());
+    console.log('Is exam ended?', new Date() > examData.endTime);
+    
+    return of(examData);
   }
 
   generateRandomQuestions(totalQuestions: number): Question[] {

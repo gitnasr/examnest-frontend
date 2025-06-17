@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ExamData, ExamService, Question } from '../services/exam.service';
 
-import { ActivatedRoute } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { ExamClosedComponent } from '../exam-closed/exam-closed.component';
 import { QuestionComponent } from './question/question.component';
 import { TimerComponent } from './timer/timer.component';
 
@@ -21,6 +22,7 @@ import { TimerComponent } from './timer/timer.component';
     ProgressBarModule,
     TimerComponent,
     QuestionComponent,
+    ExamClosedComponent,
   ],
   templateUrl: './exam-taking.component.html',
   styleUrls: ['./exam-taking.component.css'],
@@ -35,10 +37,12 @@ export class ExamTakingComponent implements OnInit {
 
   showSubmitDialog = false;
   isSubmitting = false;
+  isClosed = false;
 
   constructor(
-    private examService: ExamService,
-    private route: ActivatedRoute
+    private readonly examService: ExamService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +55,8 @@ export class ExamTakingComponent implements OnInit {
   private loadExamData(examId: string): void {
     this.examService.getExamData(examId).subscribe(data => {
       this.examData = data;
+      // Check if exam is closed
+      this.isClosed = new Date() > data.endTime;
     });
   }
 
@@ -123,5 +129,9 @@ export class ExamTakingComponent implements OnInit {
 
   canSubmit(): boolean {
     return this.examService.canSubmit(this.examData.questions);
+  }
+
+  onReturnToDashboard(): void {
+    this.router.navigate(['/student/dashboard']);
   }
 }
