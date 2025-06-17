@@ -1,9 +1,10 @@
 import { Router, RouterModule } from '@angular/router';
-
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormInputComponent } from '../../../shared/components/form-input/form-input.component';
+import { AuthService } from '../../../shared/services/auth.service';
+import { AuthenticationDTO, RegisterDTO, UserRole } from '../../../shared/interfaces/auth.interface';
 
 @Component({
   selector: 'app-auth',
@@ -12,33 +13,164 @@ import { FormInputComponent } from '../../../shared/components/form-input/form-i
   standalone: true,
   imports: [CommonModule, FormsModule, FormInputComponent, RouterModule],
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   activeTab: 'login' | 'register' = 'login';
+  isLoading = false;
+  errorMessage = '';
 
-  loginForm = {
+  loginForm: AuthenticationDTO = {
     email: '',
     password: '',
   };
 
-  registerForm = {
+  registerForm: RegisterDTO & { confirmPassword: string } = {
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   };
 
-  constructor(private router: Router) {}
-    // In the future we will determine which dashboard to navigate to based on user role
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
-  onLogin() {
-    console.log('Login form submitted:', this.loginForm);
-    this.router.navigate(['/student']);
+  ngOnInit(): void {
+    // The AuthRedirectGuard will handle redirecting authenticated users
   }
 
-  onRegister() {
-    // Use a logging service to handle logs securely
-   console.log('Register form submitted', { form: this.registerForm });
+  onLogin(): void {
+    if (!this.validateLoginForm()) {
+      return;
+    }
 
-    this.router.navigate(['/student']);
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService.login(this.loginForm).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.redirectBasedOnRole();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        // Handle the specific error structure from the API
+        if (error.error?.errors && error.error.errors.length > 0) {
+          this.errorMessage = error.error.errors[0];
+        } else if (error.error?.message) {
+          this.errorMessage = error.error.message;
+        } else if (error.message) {
+          this.errorMessage = error.message;
+        } else {
+          this.errorMessage = 'Login failed. Please try again.';
+        }
+      }
+    });
+  }
+
+  onRegister(): void {
+    if (!this.validateRegisterForm()) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const registerData: RegisterDTO = {
+      name: this.registerForm.name,
+      email: this.registerForm.email,
+      password: this.registerForm.password
+    };
+
+    this.authService.register(registerData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.redirectBasedOnRole();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        // Handle the specific error structure from the API
+        if (error.error?.errors && error.error.errors.length > 0) {
+          this.errorMessage = error.error.errors[0];
+        } else if (error.error?.message) {
+          this.errorMessage = error.error.message;
+        } else if (error.message) {
+          this.errorMessage = error.message;
+        } else {
+          this.errorMessage = 'Registration failed. Please try again.';
+        }
+      }
+    });
+  }
+
+  private validateLoginForm(): boolean {
+    if (!this.loginForm.email || !this.loginForm.password) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return false;
+    }
+
+    if (!this.isValidEmail(this.loginForm.email)) {
+      this.errorMessage = 'Please enter a valid email address.';
+      return false;
+    }
+
+    return true;
+  }
+
+  private validateRegisterForm(): boolean {
+    if (!this.registerForm.name || !this.registerForm.email || 
+        !this.registerForm.password || !this.registerForm.confirmPassword) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return false;
+    }
+
+    if (!this.isValidEmail(this.registerForm.email)) {
+      this.errorMessage = 'Please enter a valid email address.';
+      return false;
+    }
+
+    if (this.registerForm.password.length < 6) {
+      this.errorMessage = 'Password must be at least 6 characters long.';
+      return false;
+    }
+
+    if (this.registerForm.password !== this.registerForm.confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      return false;
+    }
+
+    return true;
+  }
+
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  private redirectBasedOnRole(): void {
+    const user = this.authService.getCurrentUserValue();
+    if (!user) {
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    switch (user.role) {
+      case UserRole.Student:
+        this.router.navigate(['/student/dashboard']);
+        break;
+      case UserRole.Instructor:
+        this.router.navigate(['/instructor']);
+        break;
+      case UserRole.Admin:
+      case UserRole.SuperAdmin:
+        this.router.navigate(['/admin']);
+        break;
+      default:
+        this.router.navigate(['/student/dashboard']);
+    }
+  }
+
+  clearError(): void {
+    this.errorMessage = '';
   }
 }

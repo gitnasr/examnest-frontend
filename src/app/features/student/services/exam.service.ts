@@ -1,6 +1,8 @@
-import { Observable, of } from 'rxjs';
-
+import { Observable, map, forkJoin, switchMap } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { ExamService as SharedExamService } from '../../../shared/services/exam.service';
+import { ExamDisplayResponse, ExamAnswerDTO, SubmissionPayload, QuestionBank, Choice, Exam } from '../../../shared/interfaces/exam.interface';
+import { ApiResponse } from '../../../shared/interfaces/auth.interface';
 
 export interface Question {
   id: number;
@@ -20,131 +22,66 @@ export interface ExamData {
   providedIn: 'root'
 })
 export class ExamService {
-  private questionBank = [
-    {
-      text: 'What is the capital of France?',
-      options: [
-        { id: 'A', text: 'London' },
-        { id: 'B', text: 'Paris' },
-        { id: 'C', text: 'Berlin' },
-        { id: 'D', text: 'Madrid' },
-      ],
-    },
-    {
-      text: 'Which planet is known as the Red Planet?',
-      options: [
-        { id: 'A', text: 'Venus' },
-        { id: 'B', text: 'Mars' },
-        { id: 'C', text: 'Jupiter' },
-        { id: 'D', text: 'Saturn' },
-      ],
-    },
-    {
-      text: 'What is the largest ocean on Earth?',
-      options: [
-        { id: 'A', text: 'Atlantic Ocean' },
-        { id: 'B', text: 'Indian Ocean' },
-        { id: 'C', text: 'Arctic Ocean' },
-        { id: 'D', text: 'Pacific Ocean' },
-      ],
-    },
-    {
-      text: 'Who wrote the play "Romeo and Juliet"?',
-      options: [
-        { id: 'A', text: 'Charles Dickens' },
-        { id: 'B', text: 'William Shakespeare' },
-        { id: 'C', text: 'Jane Austen' },
-        { id: 'D', text: 'Mark Twain' },
-      ],
-    },
-    {
-      text: 'What is the chemical symbol for gold?',
-      options: [
-        { id: 'A', text: 'Go' },
-        { id: 'B', text: 'Gd' },
-        { id: 'C', text: 'Au' },
-        { id: 'D', text: 'Ag' },
-      ],
-    },
-    {
-      text: 'Which year did World War II end?',
-      options: [
-        { id: 'A', text: '1944' },
-        { id: 'B', text: '1945' },
-        { id: 'C', text: '1946' },
-        { id: 'D', text: '1947' },
-      ],
-    },
-    {
-      text: 'What is the smallest prime number?',
-      options: [
-        { id: 'A', text: '1' },
-        { id: 'B', text: '2' },
-        { id: 'C', text: '3' },
-        { id: 'D', text: '5' },
-      ],
-    },
-    {
-      text: 'Which continent is the largest by area?',
-      options: [
-        { id: 'A', text: 'Africa' },
-        { id: 'B', text: 'Asia' },
-        { id: 'C', text: 'North America' },
-        { id: 'D', text: 'Europe' },
-      ],
-    },
-    {
-      text: 'What is the speed of light in vacuum?',
-      options: [
-        { id: 'A', text: '299,792,458 m/s' },
-        { id: 'B', text: '300,000,000 m/s' },
-        { id: 'C', text: '299,000,000 m/s' },
-        { id: 'D', text: '298,792,458 m/s' },
-      ],
-    },
-    {
-      text: 'Who painted the Mona Lisa?',
-      options: [
-        { id: 'A', text: 'Vincent van Gogh' },
-        { id: 'B', text: 'Pablo Picasso' },
-        { id: 'C', text: 'Leonardo da Vinci' },
-        { id: 'D', text: 'Michelangelo' },
-      ],
-    },
-  ];
-
-
+  constructor(private readonly sharedExamService: SharedExamService) {}
 
   getExamData(examId: string): Observable<ExamData> {
-    console.log('Getting exam data for:', examId);
+    const examIdNum = parseInt(examId);
     
-    const examData = {
-      title: 'Sample Exam',
-      totalQuestions: 10,
-      endTime: new Date('2027-01-01 00:00:00'), // Past date to simulate ended exam
-      questions: this.generateRandomQuestions(10)
-    };
-    
-    console.log('Exam end time:', examData.endTime);
-    console.log('Current time:', new Date());
-    console.log('Is exam ended?', new Date() > examData.endTime);
-    
-    return of(examData);
-  }
+    // Get both exam details and questions
+    return forkJoin({
+      examDetails: this.sharedExamService.getExamById(examIdNum),
+      examQuestions: this.sharedExamService.getExamDisplay(examIdNum)
+    }).pipe(
+      map(({ examDetails, examQuestions }) => {
+        if (!examQuestions.success || !examQuestions.data) {
+          throw new Error('Exam questions not found');
+        }
 
-  generateRandomQuestions(totalQuestions: number): Question[] {
-    const shuffled = this.questionBank.sort(() => Math.random() - 0.5);
-    const selectedQuestions = shuffled.slice(0, totalQuestions);
+        if (!examDetails.success || !examDetails.data) {
+          throw new Error('Exam details not found');
+        }
 
-    return selectedQuestions.map((q, idx) => ({
-      id: idx + 1,
-      text: q.text,
-      options: q.options,
-      selectedAnswer: null,
-    }));
+        const exam = examDetails.data;
+        const questions: Question[] = examQuestions.data.map((q: QuestionBank) => ({
+          id: q.questionId,
+          text: q.questionText,
+          options: q.choices?.map((c: Choice) => ({
+            id: c.choiceLetter,
+            text: c.choiceText
+          })) || [],
+          selectedAnswer: null
+        }));
+
+        // Validate that we have questions
+        if (questions.length === 0) {
+          throw new Error('No questions found for this exam');
+        }
+
+        // Set end time with fallback
+        let endTime: Date;
+        try {
+          endTime = new Date(exam.endDate);
+          // Validate the date
+          if (isNaN(endTime.getTime())) {
+            throw new Error('Invalid end date');
+          }
+        } catch (error) {
+          // Fallback to 1 hour from now if end date is invalid
+          endTime = new Date(Date.now() + 60 * 60 * 1000);
+        }
+
+        return {
+          title: `Exam ${examId}`, // We can enhance this later if course info is available
+          totalQuestions: questions.length,
+          endTime: endTime,
+          questions: questions
+        };
+      })
+    );
   }
 
   getProgress(questions: Question[]): number {
+    if (questions.length === 0) return 0;
     const answeredQuestions = questions.filter(
       (q) => q.selectedAnswer !== null
     ).length;
@@ -164,7 +101,22 @@ export class ExamService {
   }
 
   submitExam(examId: string, answers: { questionId: number; selectedAnswer: string }[]): Observable<void> {
-    // This is a placeholder - replace with actual API call
-    return of(void 0);
+    if (!answers || answers.length === 0) {
+      throw new Error('No answers provided for submission');
+    }
+
+    const examAnswers: ExamAnswerDTO[] = answers.map(answer => ({
+      questionID: answer.questionId,
+      studentAnswer: answer.selectedAnswer
+    }));
+
+    const submissionPayload: SubmissionPayload = {
+      examID: parseInt(examId),
+      answers: examAnswers
+    };
+
+    return this.sharedExamService.submitExam(submissionPayload).pipe(
+      map(() => void 0)
+    );
   }
 } 

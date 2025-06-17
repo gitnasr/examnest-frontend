@@ -28,6 +28,13 @@ export const STUDENT_ROUTES: Routes = [
       ),
   },
   {
+    path: 'exam-results/:examId',
+    loadComponent: () =>
+      import('./exam-results/exam-results.component').then(
+        (m) => m.ExamResultsComponent
+      ),
+  },
+  {
     path: '**',
     redirectTo: 'dashboard',
   },

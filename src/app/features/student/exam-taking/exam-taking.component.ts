@@ -100,7 +100,8 @@ export class ExamTakingComponent implements OnInit {
     this.examService.submitExam(examId, answers).subscribe({
       next: () => {
         this.isSubmitting = false;
-        // Handle successful submission (e.g., show success message, redirect)
+        // Redirect to results page after successful submission
+        this.router.navigate(['/student/exam-results', examId]);
       },
       error: (error) => {
         this.isSubmitting = false;

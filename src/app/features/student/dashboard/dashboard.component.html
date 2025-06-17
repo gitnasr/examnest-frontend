@@ -1,27 +1,7 @@
 <div
   class="min-h-screen text-gray-900 bg-gray-100 dark:bg-gray-900 dark:text-gray-100"
 >
-  <nav
-    class="flex items-center justify-between px-6 py-4 mb-6 bg-white shadow-md dark:bg-gray-800"
-  >
-    <div class="flex items-center">
-      <img
-        src="/assets/images/logos/logo.png"
-        alt="Exam Nest Logo"
-        class="w-8 h-8 mr-2"
-        routerLink="/"
-      />
-      <span class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-        Exam Nest
-      </span>
-    </div>
-    <button
-      (click)="logout()"
-      class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
-    >
-      Logout
-    </button>
-  </nav>
+  <app-nav-bar></app-nav-bar>
 
   <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="mb-8">
@@ -29,6 +9,31 @@
       <p class="mt-2 text-gray-300 dark:text-gray-400">
         Welcome back! Here's an overview of your academic progress.
       </p>
+      
+      <!-- Test buttons -->
+      <div class="mt-4 space-x-4">
+        <button 
+          (click)="testApiCall()" 
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Test API Call (to trigger refresh token)
+        </button>
+        
+        <button 
+          (click)="testExamApiCall()" 
+          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+          Test Exam API Call
+        </button>
+      </div>
+      
+      <div *ngIf="testResult" class="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
+        <h3 class="font-bold">Test Result:</h3>
+        <pre class="text-sm">{{ testResult | json }}</pre>
+      </div>
+
+      <div *ngIf="examTestResult" class="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
+        <h3 class="font-bold">Exam API Test Result:</h3>
+        <pre class="text-sm">{{ examTestResult | json }}</pre>
+      </div>
     </div>
 
     <div class="flex flex-col gap-6 mb-8 lg:flex-row">

@@ -1,0 +1,199 @@
+<div class="container mx-auto p-6 max-w-7xl">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Exam Management</h1>
+    <p class="text-gray-600">Create and manage exams for your courses</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="mb-6">
+    <p-message severity="error" [text]="error"></p-message>
+  </div>
+
+  <!-- Create Exam Button -->
+  <div class="mb-6">
+    <p-button 
+      label="Create New Exam" 
+      icon="pi pi-plus" 
+      styleClass="p-button-primary"
+      (onClick)="onCreateExam()">
+    </p-button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+
+  <!-- Exams Table -->
+  <div *ngIf="!isLoading" class="bg-white rounded-lg shadow">
+    <p-table 
+      [value]="exams" 
+      [paginator]="true" 
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} exams"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      styleClass="p-datatable-sm">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Course</th>
+          <th>Questions</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-exam>
+        <tr>
+          <td>{{ getCourseName(exam.courseId) }}</td>
+          <td>{{ exam.noOfQuestions }}</td>
+          <td>{{ formatDate(exam.examDate) }}</td>
+          <td>{{ formatDate(exam.endDate) }}</td>
+          <td>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [ngClass]="{
+                    'bg-green-100 text-green-800': getExamStatus(exam) === 'Active',
+                    'bg-yellow-100 text-yellow-800': getExamStatus(exam) === 'Upcoming',
+                    'bg-blue-100 text-blue-800': getExamStatus(exam) === 'Completed'
+                  }">
+              {{ getExamStatus(exam) }}
+            </span>
+          </td>
+          <td>
+            <div class="flex space-x-2">
+              <p-button 
+                icon="pi pi-eye" 
+                styleClass="p-button-sm p-button-outlined"
+                pTooltip="View Exam">
+              </p-button>
+              <p-button 
+                icon="pi pi-trash" 
+                styleClass="p-button-sm p-button-danger p-button-outlined"
+                pTooltip="Delete Exam"
+                (onClick)="onDeleteExam(exam)">
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center py-8 text-gray-500">
+            No exams found. Create your first exam to get started.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Create Exam Dialog -->
+  <p-dialog 
+    header="Create New Exam" 
+    [(visible)]="showCreateDialog" 
+    [modal]="true" 
+    [style]="{width: '50vw'}"
+    [draggable]="false" 
+    [resizable]="false">
+    
+    <form [formGroup]="examForm" class="space-y-4">
+      <!-- Course Selection -->
+      <div class="field">
+        <label for="courseId" class="block text-sm font-medium text-gray-700 mb-2">
+          Course *
+        </label>
+        <p-dropdown 
+          id="courseId"
+          formControlName="courseId"
+          [options]="courses" 
+          optionLabel="courseName" 
+          optionValue="id"
+          placeholder="Select a course"
+          styleClass="w-full">
+        </p-dropdown>
+        <div *ngIf="examForm.get('courseId')?.invalid && examForm.get('courseId')?.touched" 
+             class="text-red-500 text-sm mt-1">
+          Please select a course
+        </div>
+      </div>
+
+      <!-- Number of Questions -->
+      <div class="field">
+        <label for="noOfQuestions" class="block text-sm font-medium text-gray-700 mb-2">
+          Number of Questions *
+        </label>
+        <p-inputNumber 
+          id="noOfQuestions"
+          formControlName="noOfQuestions"
+          [min]="1" 
+          [max]="100"
+          styleClass="w-full">
+        </p-inputNumber>
+        <div *ngIf="examForm.get('noOfQuestions')?.invalid && examForm.get('noOfQuestions')?.touched" 
+             class="text-red-500 text-sm mt-1">
+          Please enter a valid number of questions (1-100)
+        </div>
+      </div>
+
+      <!-- Exam Start Date -->
+      <div class="field">
+        <label for="examDate" class="block text-sm font-medium text-gray-700 mb-2">
+          Exam Start Date *
+        </label>
+        <p-calendar 
+          id="examDate"
+          formControlName="examDate"
+          [showTime]="true"
+          [showSeconds]="false"
+          dateFormat="dd/mm/yy"
+          styleClass="w-full">
+        </p-calendar>
+        <div *ngIf="examForm.get('examDate')?.invalid && examForm.get('examDate')?.touched" 
+             class="text-red-500 text-sm mt-1">
+          Please select an exam start date
+        </div>
+      </div>
+
+      <!-- Exam End Date -->
+      <div class="field">
+        <label for="endDate" class="block text-sm font-medium text-gray-700 mb-2">
+          Exam End Date *
+        </label>
+        <p-calendar 
+          id="endDate"
+          formControlName="endDate"
+          [showTime]="true"
+          [showSeconds]="false"
+          dateFormat="dd/mm/yy"
+          styleClass="w-full">
+        </p-calendar>
+        <div *ngIf="examForm.get('endDate')?.invalid && examForm.get('endDate')?.touched" 
+             class="text-red-500 text-sm mt-1">
+          Please select an exam end date
+        </div>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-end space-x-2">
+        <p-button 
+          label="Cancel" 
+          styleClass="p-button-outlined"
+          (onClick)="onCancelCreate()"
+          [disabled]="isSubmitting">
+        </p-button>
+        <p-button 
+          label="Create Exam" 
+          icon="pi pi-check"
+          styleClass="p-button-primary"
+          (onClick)="onSubmitExam()"
+          [disabled]="examForm.invalid || isSubmitting"
+          [loading]="isSubmitting">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div> 

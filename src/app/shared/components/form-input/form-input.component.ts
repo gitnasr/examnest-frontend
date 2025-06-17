@@ -17,8 +17,8 @@ import { FormsModule } from '@angular/forms';
           [(ngModel)]="value"
           (ngModelChange)="valueChange.emit($event)"
           [required]="required"
-          
-          class="block w-full px-3 py-2 text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [disabled]="disabled"
+          class="block w-full px-3 py-2 text-white placeholder-gray-400 bg-gray-800 border border-gray-700 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
           [placeholder]="placeholder">
     </div>
   `,
@@ -31,6 +31,7 @@ export class FormInputComponent {
   @Input() label!: string;
   @Input() placeholder: string = '';
   @Input() required: boolean = false;
+  @Input() disabled: boolean = false;
   @Input() value: string = '';
   @Output() valueChange = new EventEmitter<string>();
 } 
