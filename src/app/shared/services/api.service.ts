@@ -8,7 +8,7 @@ import { ApiResponse } from '../interfaces/api.interface';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_BASE_URL = 'https://examnest-erbxf9c8bwgqbxev.italynorth-01.azurewebsites.net/api';
+  private readonly API_BASE_URL = 'https://localhost:7238/api';
 
   constructor(private http: HttpClient) {}
 

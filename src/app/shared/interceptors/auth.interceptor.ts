@@ -5,23 +5,31 @@ import { inject } from '@angular/core';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   
-  // Don't add Authorization header if it's already present (e.g., from refresh token interceptor)
+  // Skip auth endpoints
+  if (req.url.includes('/Authentication/')) {
+    return next(req);
+  }
+  
+  // Don't add Authorization header if it's already present
   if (req.headers.has('Authorization')) {
-    console.log('AuthInterceptor: Authorization header already present, skipping');
     return next(req);
   }
   
   const token = authService.getAccessToken();
   
   if (token) {
-    console.log('AuthInterceptor: Adding Authorization header with token');
+    // Check if token is expired or will expire soon
+    if (authService.isTokenExpired(token, true)) { // Use buffer time for proactive refresh
+      // Let the refresh token interceptor handle this
+      return next(req);
+    }
+    
+    // Add token to request
     req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-  } else {
-    console.log('AuthInterceptor: No token available, proceeding without Authorization header');
   }
   
   return next(req);

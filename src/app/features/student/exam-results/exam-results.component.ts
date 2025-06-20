@@ -46,15 +46,15 @@ export class ExamResultsComponent implements OnInit {
     
     if (user ) {
       this.studentId = parseInt(user.id);
-      this.loadExamResults();
+      this.loadExamResults(this.studentId);
     } else {
       this.error = 'User not authenticated';
       this.isLoading = false;
     }
   }
 
-  private loadExamResults(): void {
-    this.examService.getStudentResults(22, this.examId!).subscribe({
+  private loadExamResults(userId: number): void {
+    this.examService.getStudentResults(userId, this.examId!).subscribe({
       next: (response: StudentResult) => {
         this.result = response;
         this.loadSubmissionDetails();

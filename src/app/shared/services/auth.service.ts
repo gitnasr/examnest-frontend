@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { CookieService } from 'ngx-cookie-service';
+import { Router } from '@angular/router';
 import { 
   AuthenticationDTO, 
   RegisterDTO, 
@@ -59,7 +60,8 @@ export class AuthService {
 
   constructor(
     private apiService: ApiService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private router: Router
   ) {
     this.initializeAuth();
   }
@@ -195,6 +197,7 @@ export class AuthService {
     this.cookieService.delete(this.REFRESH_TOKEN_KEY);
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.router.navigate(['/auth']);
   }
 
   getCurrentUserValue(): UserInfo | null {
@@ -216,30 +219,36 @@ export class AuthService {
   }
 
   private setTokens(accessToken: string, refreshToken: string): void {
+    // Set access token to expire in 1 hour
     const accessTokenExpiry = new Date();
     accessTokenExpiry.setHours(accessTokenExpiry.getHours() + 1);
     
+    // Set refresh token to expire in 7 days
     const refreshTokenExpiry = new Date();
     refreshTokenExpiry.setDate(refreshTokenExpiry.getDate() + 7);
     
+    // Set access token cookie with improved settings
     this.cookieService.set(
       this.ACCESS_TOKEN_KEY, 
       accessToken, 
-      accessTokenExpiry, 
-      '/', 
-      '', 
-      true,
-      'Strict'
+      {
+        expires: accessTokenExpiry,
+        path: '/',
+        secure: true,
+        sameSite: 'Strict'
+      }
     );
     
+    // Set refresh token cookie with improved settings
     this.cookieService.set(
       this.REFRESH_TOKEN_KEY, 
       refreshToken, 
-      refreshTokenExpiry, 
-      '/', 
-      '', 
-      true,
-      'Strict'
+      {
+        expires: refreshTokenExpiry,
+        path: '/',
+        secure: true,
+        sameSite: 'Strict'
+      }
     );
   }
 
@@ -253,15 +262,18 @@ export class AuthService {
     return token || null;
   }
 
-  isTokenExpired(token: string): boolean {
+  isTokenExpired(token: string, useBuffer: boolean = false): boolean {
     try {
       const decoded = jwtDecode<TokenPayload>(token);
       const currentTime = Date.now() / 1000;
-      const isExpired = decoded.exp < currentTime;
+      // Only apply buffer time when explicitly requested (for proactive refresh)
+      const bufferTime = useBuffer ? 5 * 60 : 0; // 5 minutes buffer only when useBuffer is true
+      const isExpired = decoded.exp < (currentTime + bufferTime);
       
       console.log('AuthService: Token expiration check:', {
         tokenExpiry: new Date(decoded.exp * 1000),
         currentTime: new Date(currentTime * 1000),
+        bufferTimeApplied: bufferTime,
         isExpired: isExpired
       });
       

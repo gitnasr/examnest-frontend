@@ -165,7 +165,7 @@ export interface Course {
 
 export interface QuestionBank {
   questionId: number;
-  courseId: number;
+  courseId?: number;
   questionText: string;
   questionType: string;
   modelAnswer?: string;

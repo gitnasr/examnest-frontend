@@ -56,7 +56,9 @@ export class ExamTakingComponent implements OnInit {
     this.examService.getExamData(examId).subscribe(data => {
       this.examData = data;
       // Check if exam is closed
-      this.isClosed = new Date() > data.endTime;
+      if (data.endTime) {
+        this.isClosed = new Date() > new Date(data.endTime);
+      }
     });
   }
 

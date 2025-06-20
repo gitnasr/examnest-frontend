@@ -34,8 +34,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
-    private apiService: ApiService,
-    private examService: ExamService
+    private readonly apiService: ApiService,
+    private readonly  examService: ExamService
   ) {}
 
   ngOnInit(): void {

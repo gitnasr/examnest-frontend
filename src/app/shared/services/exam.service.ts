@@ -11,7 +11,9 @@ import {
   SubmissionDetail, 
   StudentResult,
   ApiResponse,
-  ArrayResponse
+  ArrayResponse,
+  QuestionBank,
+  ExamDisplayResponse
 } from '../interfaces/api.interface';
 
 @Injectable({
@@ -47,8 +49,8 @@ export class ExamService {
   }
 
   // Get exam display (with questions) for taking
-  getExamDisplay(id: number): Observable<ExamDisplay> {
-    return this.apiService.get<ApiResponse<ExamDisplay>>(`/Exams/${id}/display`)
+  getExamDisplay(id: number): Observable<QuestionBank[]> {
+    return this.apiService.get<ExamDisplayResponse>(`/Exams/${id}/display`)
       .pipe(
         map(response => {
           if (!response.success || !response.data) {
