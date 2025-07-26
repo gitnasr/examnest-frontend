@@ -244,10 +244,8 @@ export interface Instructor {
 export interface Student {
   id: number;
   userId: string;
-  branchId: number;
-  trackId: number;
-  branch?: Branch;
-  track?: Track;
+  branchName: string;
+  trackName: string;
   user?: UserInfo;
 }
 

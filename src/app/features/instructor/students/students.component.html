@@ -127,34 +127,27 @@
             <tr>
               <td>
                 <div class="flex items-center space-x-3">
-                  <p-avatar 
-                    [label]="getStudentInitials(student)" 
-                    size="normal"
-                    styleClass="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                  </p-avatar>
                   <div>
                     <div class="font-semibold text-gray-900 dark:text-gray-100">
-                      {{ student.user?.name || 'Unknown Name' }}
+                      {{ student.name || 'Unknown Name' }}
                     </div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400">
-                      ID: {{ student.userId }}
-                    </div>
+                   
                   </div>
                 </div>
               </td>
               <td>
                 <span class="text-gray-700 dark:text-gray-300">
-                  {{ student.user?.email || 'N/A' }}
+                  {{ student.email || 'N/A' }}
                 </span>
               </td>
               <td>
                 <span class="text-gray-700 dark:text-gray-300">
-                  {{ getBranchName(student.branchId) }}
+                  {{ student.branchName }}
                 </span>
               </td>
               <td>
                 <span class="text-gray-700 dark:text-gray-300">
-                  {{ getTrackName(student.trackId) }}
+                  {{ student.trackName }}
                 </span>
               </td>
               <td>

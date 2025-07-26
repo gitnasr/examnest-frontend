@@ -1,10 +1,12 @@
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
   <app-nav-bar></app-nav-bar>
-  
+
   <div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Instructor Dashboard</h1>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        Instructor Dashboard
+      </h1>
       <p class="mt-2 text-gray-600 dark:text-gray-400">
         Welcome back! Here's an overview of your academic management activities.
       </p>
@@ -23,201 +25,158 @@
     <!-- Dashboard Content -->
     <div *ngIf="!isLoading && !error">
       <!-- Statistics Cards -->
-      <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div
+        class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+      >
         <!-- Total Exams -->
         <p-card styleClass="h-full">
           <div class="text-center">
-            <div class="text-3xl font-bold text-blue-600">{{ stats.totalExams }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">Total Exams</div>
+            <div class="text-3xl font-bold text-blue-600">
+              {{ stats.totalExams }}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Total Exams
+            </div>
           </div>
         </p-card>
 
         <!-- Active Exams -->
         <p-card styleClass="h-full">
           <div class="text-center">
-            <div class="text-3xl font-bold text-green-600">{{ stats.activeExams }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">Active Exams</div>
+            <div class="text-3xl font-bold text-green-600">
+              {{ stats.activeExams }}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Active Exams
+            </div>
           </div>
         </p-card>
 
         <!-- Total Courses -->
         <p-card styleClass="h-full">
           <div class="text-center">
-            <div class="text-3xl font-bold text-purple-600">{{ stats.totalCourses }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">Total Courses</div>
+            <div class="text-3xl font-bold text-purple-600">
+              {{ stats.totalCourses }}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Total Courses
+            </div>
           </div>
         </p-card>
 
         <!-- Total Questions -->
         <p-card styleClass="h-full">
           <div class="text-center">
-            <div class="text-3xl font-bold text-orange-600">{{ stats.totalQuestions }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">Total Questions</div>
+            <div class="text-3xl font-bold text-orange-600">
+              {{ stats.totalQuestions }}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Total Questions
+            </div>
           </div>
         </p-card>
 
         <!-- Total Students -->
         <p-card styleClass="h-full">
           <div class="text-center">
-            <div class="text-3xl font-bold text-indigo-600">{{ stats.totalStudents }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">Total Students</div>
+            <div class="text-3xl font-bold text-indigo-600">
+              {{ stats.totalStudents }}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Total Students
+            </div>
           </div>
         </p-card>
 
         <!-- Recent Submissions -->
         <p-card styleClass="h-full">
           <div class="text-center">
-            <div class="text-3xl font-bold text-red-600">{{ stats.recentSubmissions }}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">Recent Submissions</div>
+            <div class="text-3xl font-bold text-red-600">
+              {{ stats.recentSubmissions }}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Recent Submissions
+            </div>
           </div>
         </p-card>
       </div>
 
       <!-- Quick Actions -->
       <div class="mb-8">
-        <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h2>
+        <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
+          Quick Actions
+        </h2>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <button 
+          <button
             (click)="navigateToExamManagement()"
-            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md">
+            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md"
+          >
             <div class="flex items-center space-x-3">
               <i class="text-2xl text-blue-600 pi pi-file-edit"></i>
               <div class="text-left">
-                <div class="font-semibold text-gray-900 dark:text-gray-100">Manage Exams</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Create and manage exams</div>
+                <div class="font-semibold text-gray-900 dark:text-gray-100">
+                  Manage Exams
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  Create and manage exams
+                </div>
               </div>
             </div>
           </button>
 
-          <button 
+          <button
             (click)="navigateToQuestionBank()"
-            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md">
+            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md"
+          >
             <div class="flex items-center space-x-3">
               <i class="text-2xl text-green-600 pi pi-question-circle"></i>
               <div class="text-left">
-                <div class="font-semibold text-gray-900 dark:text-gray-100">Question Bank</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Manage questions</div>
+                <div class="font-semibold text-gray-900 dark:text-gray-100">
+                  Question Bank
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  Manage questions
+                </div>
               </div>
             </div>
           </button>
 
-          <button 
+          <button
             (click)="navigateToStudents()"
-            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md">
+            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md"
+          >
             <div class="flex items-center space-x-3">
               <i class="text-2xl text-purple-600 pi pi-users"></i>
               <div class="text-left">
-                <div class="font-semibold text-gray-900 dark:text-gray-100">Students</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">View student list</div>
+                <div class="font-semibold text-gray-900 dark:text-gray-100">
+                  Students
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  View student list
+                </div>
               </div>
             </div>
           </button>
 
-          <button 
+          <button
             (click)="navigateToCourses()"
-            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md">
+            class="p-4 transition-shadow bg-white rounded-lg shadow dark:bg-gray-800 hover:shadow-md"
+          >
             <div class="flex items-center space-x-3">
               <i class="text-2xl text-orange-600 pi pi-book"></i>
               <div class="text-left">
-                <div class="font-semibold text-gray-900 dark:text-gray-100">Courses</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Manage courses</div>
+                <div class="font-semibold text-gray-900 dark:text-gray-100">
+                  Courses
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  Manage courses
+                </div>
               </div>
             </div>
           </button>
         </div>
       </div>
 
-      <!-- Charts and Analytics -->
-      <div class="grid grid-cols-1 gap-8 mb-8 lg:grid-cols-2">
-        <!-- Exam Status Chart -->
-        <p-card header="Exam Status Distribution" styleClass="h-full">
-          <div class="h-64">
-            <p-chart type="doughnut" [data]="examStatusData" [options]="examStatusOptions"></p-chart>
-          </div>
-        </p-card>
-
-        <!-- Submission Trend Chart -->
-        <p-card header="Weekly Submission Trend" styleClass="h-full">
-          <div class="h-64">
-            <p-chart type="line" [data]="submissionTrendData" [options]="submissionTrendOptions"></p-chart>
-          </div>
-        </p-card>
-      </div>
-
-      <!-- Recent Activity and Tables -->
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <!-- Recent Activity -->
-        <p-card header="Recent Activity" styleClass="h-full">
-          <div class="space-y-4">
-            <div *ngFor="let activity of recentActivity" class="flex items-start p-3 space-x-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <i [class]="getActivityIcon(activity.type) + ' text-lg ' + getActivityColor(activity.status)"></i>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900 dark:text-gray-100">{{ activity.title }}</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">{{ activity.description }}</div>
-                <div class="mt-1 text-xs text-gray-500 dark:text-gray-500">
-                  {{ formatDate(activity.timestamp) }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </p-card>
-
-        <!-- Recent Exams -->
-        <p-card header="Recent Exams" styleClass="h-full">
-          <div class="space-y-3">
-            <div *ngFor="let exam of recentExams" class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900 dark:text-gray-100">
-                  Exam #{{ exam.id }}
-                </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ formatDate(exam.examDate) }}
-                </div>
-              </div>
-              <p-badge [value]="getExamStatus(exam)" [severity]="getStatusColor(getExamStatus(exam))"></p-badge>
-            </div>
-            <div *ngIf="recentExams.length === 0" class="py-4 text-center text-gray-500 dark:text-gray-400">
-              No recent exams
-            </div>
-          </div>
-        </p-card>
-      </div>
-
-      <!-- Recent Students -->
-      <div class="mt-8">
-        <p-card header="Recent Students">
-          <p-table [value]="recentStudents" [paginator]="false" [rows]="5" styleClass="p-datatable-sm">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Student</th>
-                <th>Email</th>
-                <th>Branch</th>
-                <th>Track</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-student>
-              <tr>
-                <td>
-                  <div class="flex items-center space-x-3">
-                    <p-avatar label="{{ student.user?.name?.charAt(0) || 'S' }}" size="normal"></p-avatar>
-                    <span class="font-semibold">{{ student.user?.name || 'Unknown' }}</span>
-                  </div>
-                </td>
-                <td>{{ student.user?.email || 'N/A' }}</td>
-                <td>{{ student.branch?.branchName || 'N/A' }}</td>
-                <td>{{ student.track?.trackName || 'N/A' }}</td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="4" class="py-4 text-center text-gray-500 dark:text-gray-400">
-                  No students found
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </p-card>
-      </div>
     </div>
   </div>
-</div> 
+</div>

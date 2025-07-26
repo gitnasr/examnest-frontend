@@ -143,8 +143,8 @@ export class StudentsComponent implements OnInit {
   editStudent(student: Student): void {
     this.selectedStudent = student;
     this.editForm.patchValue({
-      branchId: student.branchId || '',
-      trackId: student.trackId || '',
+      branchName: student.branchName || '',
+      trackName: student.trackName || '',
       userId: student.userId
     });
     this.editDialogVisible = true;
@@ -224,11 +224,11 @@ export class StudentsComponent implements OnInit {
     }
 
     if (this.selectedBranch) {
-      filtered = filtered.filter(student => student.branchId === this.selectedBranch?.id);
+      filtered = filtered.filter(student => student.branchName === this.selectedBranch?.branchName);
     }
 
     if (this.selectedTrack) {
-      filtered = filtered.filter(student => student.trackId === this.selectedTrack?.id);
+      filtered = filtered.filter(student => student.trackName === this.selectedTrack?.trackName);
     }
 
     return filtered;
@@ -259,8 +259,8 @@ export class StudentsComponent implements OnInit {
   }
 
   getStudentStatus(student: Student): string {
-    if (student.branchId && student.trackId) return 'Active';
-    if (student.branchId || student.trackId) return 'Partially Assigned';
+    if (student.branchName && student.trackName) return 'Active';
+    if (student.branchName || student.trackName) return 'Partially Assigned';
     return 'Unassigned';
   }
 

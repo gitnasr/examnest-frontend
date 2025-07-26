@@ -218,34 +218,9 @@ export class InstructorDashboardComponent implements OnInit {
       }
     };
 
-    // Submission Trend Chart
-    this.submissionTrendData = {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [
-        {
-          label: 'Submissions',
-          data: [12, 19, 15, 25, 22, 18, 24],
-          borderColor: '#3B82F6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4
-        }
-      ]
-    };
+  
 
-    this.submissionTrendOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    };
+   
   }
 
   // Navigation methods
