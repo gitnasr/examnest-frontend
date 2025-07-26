@@ -5,7 +5,6 @@ import { ApiService } from './api.service';
 import { 
   Exam, 
   ExamCreatePayload, 
-  ExamDisplay, 
   Submission, 
   SubmissionPayload, 
   SubmissionDetail, 

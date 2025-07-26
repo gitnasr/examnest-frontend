@@ -65,8 +65,6 @@ export class QuestionBankComponent implements OnInit {
   choiceForm: FormGroup;
   
   // Pagination
-  currentPage = 1;
-  totalRecords = 0;
   rowsPerPage = 10;
   
   // Question types
@@ -100,18 +98,29 @@ export class QuestionBankComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadQuestions();
+    this.loadAllQuestions();
     this.loadCourses();
   }
 
-  private async loadQuestions(): Promise<void> {
+  private async loadAllQuestions(): Promise<void> {
     try {
       this.isLoading = true;
-      const response = await this.questionBankService.getQuestions(this.currentPage).toPromise();
-      if (response) {
-        this.questions = response;
-        this.totalRecords = response.length; // In a real app, this would come from pagination metadata
+      
+      const allQuestions: QuestionBank[] = [];
+      let currentPage = 1;
+      
+      while (true) {
+        const questionsOnPage = await this.questionBankService.getQuestions(currentPage).toPromise();
+        if (questionsOnPage && questionsOnPage.length > 0) {
+          allQuestions.push(...questionsOnPage);
+          currentPage++;
+        } else {
+          break; // No more questions
+        }
       }
+      
+      this.questions = allQuestions;
+
     } catch (error) {
       this.error = 'Failed to load questions';
       console.error('Error loading questions:', error);
@@ -122,16 +131,28 @@ export class QuestionBankComponent implements OnInit {
 
   private async loadCourses(): Promise<void> {
     try {
-      const response = await this.courseService.getCourses(1).toPromise();
-      if (response) {
-        // Map courseID to id if needed
-        this.courses = response.map((course: any) => ({
-          ...course,
-          id: course.id ?? course.courseID
-        }));
+      const allCourses: Course[] = [];
+      let currentPage = 1;
+      while (true) {
+        const coursesOnPage = await this.courseService.getCourses(currentPage).toPromise();
+        if (coursesOnPage && coursesOnPage.length > 0) {
+          allCourses.push(...coursesOnPage);
+          currentPage++;
+        } else {
+          // No more courses on this page, so we stop.
+          break;
+        }
       }
+
+      // Map courseID to id for the dropdown component
+      this.courses = allCourses.map((course: Course) => ({
+        ...course,
+        id: course.courseID
+      }));
+
     } catch (error) {
       console.error('Error loading courses:', error);
+      this.error = 'Failed to load courses. Some information may be missing.';
     }
   }
 
@@ -148,7 +169,7 @@ export class QuestionBankComponent implements OnInit {
   editQuestion(question: QuestionBank): void {
     this.selectedQuestion = question;
     this.questionForm.patchValue({
-      courseId: question.courseId,
+      courseId: question.courseID,
       questionText: question.questionText,
       questionType: question.questionType,
       modelAnswer: question.modelAnswer,
@@ -168,7 +189,7 @@ export class QuestionBankComponent implements OnInit {
       
       if (this.selectedQuestion) {
         // Update existing question
-        await this.questionBankService.updateQuestion(this.selectedQuestion.questionId, questionData).toPromise();
+        await this.questionBankService.updateQuestion(this.selectedQuestion.questionID, questionData).toPromise();
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
@@ -185,7 +206,7 @@ export class QuestionBankComponent implements OnInit {
       }
       
       this.questionDialogVisible = false;
-      this.loadQuestions();
+      this.loadAllQuestions();
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -202,7 +223,7 @@ export class QuestionBankComponent implements OnInit {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.performDeleteQuestion(question.questionId);
+        this.performDeleteQuestion(question.questionID);
       }
     });
   }
@@ -215,7 +236,7 @@ export class QuestionBankComponent implements OnInit {
         summary: 'Success',
         detail: 'Question deleted successfully'
       });
-      this.loadQuestions();
+      this.loadAllQuestions();
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -230,9 +251,9 @@ export class QuestionBankComponent implements OnInit {
   openChoiceDialog(question: QuestionBank): void {
     this.selectedQuestion = question;
     this.choiceForm.patchValue({
-      questionId: question.questionId
+      questionId: question.questionID
     });
-    this.loadQuestionChoices(question.questionId);
+    this.loadQuestionChoices(question.questionID);
     this.choiceDialogVisible = true;
   }
 
@@ -264,9 +285,9 @@ export class QuestionBankComponent implements OnInit {
       });
       
       this.choiceForm.reset({
-        questionId: this.selectedQuestion?.questionId
+        questionId: this.selectedQuestion?.questionID
       });
-      this.loadQuestionChoices(this.selectedQuestion!.questionId);
+      this.loadQuestionChoices(this.selectedQuestion!.questionID);
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -310,7 +331,7 @@ export class QuestionBankComponent implements OnInit {
   // Utility methods
   getCourseName(courseId: number): string {
     const course = this.courses.find(c => c.courseID === courseId);
-    return course?.courseName || 'Unknown Course';
+    return course ? course.courseName : 'N/A';
   }
 
   getQuestionTypeLabel(type: string): string {
@@ -333,18 +354,13 @@ export class QuestionBankComponent implements OnInit {
   }
 
   markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      control.updateValueAndValidity({ onlySelf: true });
     });
   }
 
-  onPageChange(event: any): void {
-    this.currentPage = event.page + 1;
-    this.loadQuestions();
-  }
-
   navigateBack(): void {
-    this.router.navigate(['/instructor']);
+    this.router.navigate(['/instructor/dashboard']);
   }
 } 

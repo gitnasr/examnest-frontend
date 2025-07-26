@@ -164,12 +164,15 @@ export interface Course {
 }
 
 export interface QuestionBank {
-  questionId: number;
-  courseId?: number;
+  questionID: number;
+  courseID: number;
   questionText: string;
   questionType: string;
-  modelAnswer?: string;
+  modelAnswer: string;
   points: number;
+  courseName: string;
+  trackID: number;
+  trackName: string;
   choices?: Choice[];
   course?: Course;
 }

@@ -25,7 +25,6 @@ export class ExamService {
 
   getExamData(examId: string): Observable<ExamData> {
     const examIdNum = parseInt(examId);
-    console.log("🚀 ~ ExamService ~ getExamData ~ examIdNum:", examIdNum)
     
     // Get both exam details and questions
     return forkJoin({
@@ -39,7 +38,7 @@ export class ExamService {
 
         const exam = examDetails;
         const questions: Question[] = examQuestions.map((q: QuestionBank) => ({
-          id: q.questionId,
+          id: q.questionID,
           text: q.questionText,
           options: q.choices?.map((c: Choice) => ({
             id: c.choiceLetter,

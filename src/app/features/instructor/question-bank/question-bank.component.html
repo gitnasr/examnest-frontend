@@ -44,11 +44,9 @@
           [value]="questions" 
           [paginator]="true" 
           [rows]="rowsPerPage"
-          [totalRecords]="totalRecords"
           [showCurrentPageReport]="true"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} questions"
-          [rowsPerPageOptions]="[5, 10, 25, 50]"
-          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 25, 50, 100]"
           styleClass="p-datatable-sm">
           
           <ng-template pTemplate="header">
@@ -65,7 +63,7 @@
           
           <ng-template pTemplate="body" let-question>
             <tr>
-              <td>{{ question.questionId }}</td>
+              <td>{{ question.questionID }}</td>
               <td>
                 <div class="max-w-xs">
                   <div class="font-medium text-gray-900 dark:text-gray-100">
@@ -73,7 +71,7 @@
                   </div>
                 </div>
               </td>
-              <td>{{ getCourseName(question.courseId) }}</td>
+              <td>{{ getCourseName(question.courseID) }}</td>
               <td>
                 <p-badge 
                   [value]="getQuestionTypeLabel(question.questionType)" 

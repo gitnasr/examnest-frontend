@@ -10,27 +10,13 @@
         Welcome back! Here's an overview of your academic progress.
       </p>
       
-      <!-- Test buttons -->
-      <div class="mt-4 space-x-4">
-        <button 
-          (click)="testApiCall()" 
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Test API Call (to trigger refresh token)
-        </button>
-        
-        <button 
-          (click)="testExamApiCall()" 
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-          Test Exam API Call
-        </button>
-      </div>
       
-      <div *ngIf="testResult" class="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
+      <div *ngIf="testResult" class="p-4 mt-4 bg-gray-100 rounded dark:bg-gray-800">
         <h3 class="font-bold">Test Result:</h3>
         <pre class="text-sm">{{ testResult | json }}</pre>
       </div>
 
-      <div *ngIf="examTestResult" class="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
+      <div *ngIf="examTestResult" class="p-4 mt-4 bg-gray-100 rounded dark:bg-gray-800">
         <h3 class="font-bold">Exam API Test Result:</h3>
         <pre class="text-sm">{{ examTestResult | json }}</pre>
       </div>
